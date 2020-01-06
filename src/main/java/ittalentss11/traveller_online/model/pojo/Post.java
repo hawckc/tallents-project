@@ -1,4 +1,4 @@
-package ittalentss11.traveller_online.model;
+package ittalentss11.traveller_online.model.pojo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Post {
-    private int id;
-    private int userId;
-    private int locationId;
-    private int categoryId;
+    private long id;
+    private User user;
+    private Location location;
+    private Category category;
     private String videoUrl;
     private String description;
     private String otherInfo;

@@ -1,4 +1,4 @@
-package ittalentss11.traveller_online.model;
+package ittalentss11.traveller_online.model.pojo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,9 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Comment {
-    private int id;
+    private long id;
     private String text;
-    private int postId;
-    private int userId;
+    private Post post;
+    private User user;
 
 }
