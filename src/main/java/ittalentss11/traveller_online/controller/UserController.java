@@ -1,6 +1,9 @@
 package ittalentss11.traveller_online.controller;
 
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import ittalentss11.traveller_online.controller.controller_exceptions.*;
+
 import ittalentss11.traveller_online.model.dao.LocationDAO;
 import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dao.UserDao;
@@ -15,6 +18,7 @@ import ittalentss11.traveller_online.model.pojo.User;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -27,6 +31,7 @@ public class UserController {
     private PostDAO postDAO;
     @Autowired
     private LocationDAO locationDAO;
+    private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
     //USER REGISTRATION
     @SneakyThrows
     @PostMapping(value = "/users")
@@ -64,8 +69,8 @@ public class UserController {
         if (dao.foundUsernameForLogin(userLoginDTO.getUsername()) == true){
             User u = dao.getUserByUsername(userLoginDTO.getUsername());
             String hash = userLoginDTO.getPassword();
-            hash = BCrypt.hashpw(hash, userLoginDTO.getUsername());
-            if (BCrypt.checkpw(hash, u.getPassword()) == false){
+            //boolean success = argon2.verify(u.getPassword(), userLoginDTO.getPassword());
+            if (argon2.verify(u.getPassword(), userLoginDTO.getPassword()) == false){
                 throw new AuthorizationError();
             }
             session.setAttribute(USER_LOGGED, u);
