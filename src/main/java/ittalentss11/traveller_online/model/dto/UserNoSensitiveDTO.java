@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserNoSensititiveDTO {
+public class UserNoSensitiveDTO {
     private String firstName;
     private String lastName;
     private String username;
@@ -16,7 +16,7 @@ public class UserNoSensititiveDTO {
     
     public UserNoSensitiveDTO(UserRegDTO userRegDTO){
         this.firstName = userRegDTO.getFirstName();
-        this.lastName = userRegDTO.getlastName();
+        this.lastName = userRegDTO.getLastName();
         this.username = userRegDTO.getUsername();
         this.email = userRegDTO.getEmail();
     }

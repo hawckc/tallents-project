@@ -1,16 +1,18 @@
 package ittalentss11.traveller_online.model.dao;
 
 import ittalentss11.traveller_online.model.dto.UserRegDTO;
+import ittalentss11.traveller_online.model.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.List;
 
 @Component
 public class UserDao {
+    public static final String INSERT_USER = "INSERT INTO final_project.users (`first_name`, `last_name`, `username`, `password`, `email`) VALUES (?, ?, ?, ?, ?);";
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -26,9 +28,9 @@ public class UserDao {
         return result == 0;
     }
     //USER REGISTRATION
-    public void register (UserRegDTO user){
+    public void register (User user){
         //hash is made by taking password and salting
-        jdbcTemplate.update("INSERT INTO final_project.users (`first_name`, `last_name`, `username`, `password`, `email`) VALUES (?, ?, ?, ?, ?);",
+        jdbcTemplate.update(INSERT_USER,
                                 user.getFirstName(),
                                 user.getLastName(),
                                 user.getUsername(),
@@ -42,5 +44,23 @@ public class UserDao {
     public String getHashByUser(String username){
         String result = jdbcTemplate.queryForObject("SELECT password FROM final_project.users WHERE username = '"+username+"';", String.class);
         return result;
+    }
+    public User getUserByUsername(String username) throws SQLException {
+        Connection connection = jdbcTemplate.getDataSource().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM final_project.users WHERE username = ?;", Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, "username");
+            ResultSet set = preparedStatement.executeQuery();
+            if (set.next()){
+                User u = new User(set.getLong("id"),
+                                    set.getString("first_name"),
+                                    set.getString("last_name"),
+                                    set.getString("username"),
+                                    set.getString("email"),
+                                    set.getString("password"));
+                return u;
+            }
+            return null;
+
+        }
     }
 }

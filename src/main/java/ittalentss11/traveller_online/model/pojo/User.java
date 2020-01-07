@@ -1,6 +1,8 @@
 package ittalentss11.traveller_online.model.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ittalentss11.traveller_online.model.dto.UserRegDTO;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
 public class User {
     private long id;
     private String firstName;
@@ -18,7 +21,7 @@ public class User {
     
     public User(UserRegDTO userRegDTO){
         this.firstName = userRegDTO.getFirstName();
-        this.lastName = userRegDTO.getlastName();
+        this.lastName = userRegDTO.getLastName();
         this.username = userRegDTO.getUsername();
         this.email = userRegDTO.getEmail();
         this.password = userRegDTO.getPassword();
