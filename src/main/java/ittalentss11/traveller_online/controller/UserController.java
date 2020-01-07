@@ -1,15 +1,17 @@
 package ittalentss11.traveller_online.controller;
 
-import ittalentss11.traveller_online.controller.controller_exceptions.EmailTaken;
-import ittalentss11.traveller_online.controller.controller_exceptions.NoPassMatch;
-import ittalentss11.traveller_online.controller.controller_exceptions.UsernameTaken;
+import ittalentss11.traveller_online.controller.controller_exceptions.*;
 import ittalentss11.traveller_online.model.dao.UserDao;
+import ittalentss11.traveller_online.model.dto.UserLoginDTO;
+import ittalentss11.traveller_online.model.dto.UserNoSensititiveDTO;
 import ittalentss11.traveller_online.model.dto.UserRegDTO;
 import ittalentss11.traveller_online.model.pojo.User;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -21,7 +23,7 @@ public class UserController {
     //USER REGISTRATION
     @SneakyThrows
     @PostMapping(value = "/users")
-    public UserRegDTO add (@RequestBody UserRegDTO user){
+    public UserNoSensititiveDTO add (@RequestBody UserRegDTO user){
         //VERIFICATIONS:
         //Check if username is available
         if (!dao.usernameIsAvailable(user.getUsername())){
@@ -35,9 +37,23 @@ public class UserController {
         if (!user.getPassword().equals(user.getConfPassword())){
             throw new NoPassMatch();
         }
-        //Create user and return it as confirmation
+        if (user.checkEmail(user.getEmail()) == false){
+            throw new EmailRegisterCheck();
+        }
+        //Create user and return it as confirmation // return a userdto which having username and email not user
         dao.register(user);
-        return user;
+        UserNoSensititiveDTO userNoSensititiveDTO = new UserNoSensititiveDTO(user.getFirstName(),
+                                                         user.getLastName(), user.getUsername(), user.getEmail());
+        return userNoSensititiveDTO;
+    }
+    @SneakyThrows
+    @PostMapping(value = "/users/login")
+    public UserNoSensititiveDTO login(@RequestBody UserLoginDTO userLoginDTO, HttpSession session){
+        //validate
+        if (dao.foundUsernameForLogin(userLoginDTO.getUsername()) == false){
+            throw new NoSuchUsername();
+        }
+        return null;
     }
 
     //FOR TESTING
