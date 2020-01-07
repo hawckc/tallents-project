@@ -41,9 +41,9 @@ public class UserController {
             throw new EmailRegisterCheck();
         }
         //Create user and return it as confirmation // return a userdto which having username and email not user
-        dao.register(user);
-        UserNoSensititiveDTO userNoSensititiveDTO = new UserNoSensititiveDTO(user.getFirstName(),
-                                                         user.getLastName(), user.getUsername(), user.getEmail());
+        User created = new User(user);
+        dao.register(created);
+        UserNoSensititiveDTO userNoSensititiveDTO = new UserNoSensititiveDTO(user);
         return userNoSensititiveDTO;
     }
     @SneakyThrows
