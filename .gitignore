@@ -18,6 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
+*.properties
 
 ### NetBeans ###
 /nbproject/private/
@@ -34,7 +35,6 @@ build/
 ### FROM PREVIOUS GITIGNORE FILE ###
 # Compiled class file
 *.class
-
 # Log file
 *.log
 
