@@ -15,4 +15,13 @@ public class User {
     private String username;
     private String email;
     private String password;
+    
+    public User(UserRegDTO userRegDTO){
+        this.firstName = userRegDTO.getFirstName();
+        this.lastName = userRegDTO.getlastName();
+        this.username = userRegDTO.getUsername();
+        this.email = userRegDTO.getEmail();
+        this.password = userRegDTO.getPassword();
+        
+    }
 }
