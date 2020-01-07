@@ -5,14 +5,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
+
+import javax.persistence.*;
+
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @Component
 @AllArgsConstructor
+@Entity
+@Table(name = "categories")
 public class Category {
-    @JsonIgnore
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column
     private String name;
 }

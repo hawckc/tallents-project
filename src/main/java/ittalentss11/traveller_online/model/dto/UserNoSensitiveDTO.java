@@ -21,11 +21,5 @@ public class UserNoSensitiveDTO {
         this.username = user.getUsername();
         this.email = user.getEmail();
     }
-    public UserNoSensitiveDTO(User u){
-        this.firstName = u.getFirstName();
-        this.lastName = u.getLastName();
-        this.username = u.getUsername();
-        this.email = u.getEmail();
-    }
 
 }

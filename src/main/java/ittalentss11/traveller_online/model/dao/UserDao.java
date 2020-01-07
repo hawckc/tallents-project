@@ -5,11 +5,9 @@ import ittalentss11.traveller_online.model.dto.UserRegDTO;
 import ittalentss11.traveller_online.model.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
-import java.util.List;
 
 @Component
 public class UserDao {
