@@ -3,8 +3,8 @@ import ittalentss11.traveller_online.model.pojo.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,6 +20,12 @@ public class UserNoSensitiveDTO {
         this.lastName = user.getLastName();
         this.username = user.getUsername();
         this.email = user.getEmail();
+    }
+    public UserNoSensitiveDTO(User u){
+        this.firstName = u.getFirstName();
+        this.lastName = u.getLastName();
+        this.username = u.getUsername();
+        this.email = u.getEmail();
     }
 
 }
