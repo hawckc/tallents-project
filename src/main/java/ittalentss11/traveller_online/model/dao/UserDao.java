@@ -19,6 +19,7 @@ public class UserDao {
     private JdbcTemplate jdbcTemplate;
 
     //=========== USER REGISTRATION ==========/
+    //TODO: MAKE SURE TO USER CORRECT SQL QUERRIES
     //MAIL AVAILABILITY
     public boolean emailIsAvailable (String email){
         int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.users WHERE email = '"+email+"';", Integer.class);

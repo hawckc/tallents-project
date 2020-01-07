@@ -18,6 +18,7 @@ public class UserRegDTO {
     private String email;
     private String password;
     private String confPassword;
+
     public boolean checkEmail(String email){
         String correct = "^[a-zA-Z0-9_+&*-]+(?:\\."+
                 "[a-zA-Z0-9_+&*-]+)*@" +

@@ -1,6 +1,6 @@
 package ittalentss11.traveller_online.model.pojo;
 
-import ittalentss11.traveller_online.model.dto.LocationDTO;
+//import ittalentss11.traveller_online.model.dto.LocationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
