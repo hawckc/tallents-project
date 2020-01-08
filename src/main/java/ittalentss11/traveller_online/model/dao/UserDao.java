@@ -3,6 +3,7 @@ package ittalentss11.traveller_online.model.dao;
 import ittalentss11.traveller_online.model.dto.UserNoSensitiveDTO;
 import ittalentss11.traveller_online.model.dto.UserRegDTO;
 import ittalentss11.traveller_online.model.pojo.User;
+import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,11 @@ import java.sql.*;
 public class UserDao {
     public static final String INSERT_USER = "INSERT INTO final_project.users (`first_name`, `last_name`, `username`, `password`, `email`) VALUES (?, ?, ?, ?, ?);";
     public static final String USER_BY_USERNAME = "SELECT * FROM final_project.users WHERE username = ?;";
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private UserRepository userRepository;
 
     //=========== USER REGISTRATION ==========/
     //TODO: MAKE SURE TO USER CORRECT SQL QUERRIES

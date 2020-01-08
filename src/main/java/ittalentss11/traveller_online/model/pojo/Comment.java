@@ -24,7 +24,11 @@ public class Comment {
     private long id;
     @Column
     private String text;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
     private Post post;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
 }

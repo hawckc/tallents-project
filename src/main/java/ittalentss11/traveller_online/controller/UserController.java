@@ -12,12 +12,15 @@ import ittalentss11.traveller_online.model.pojo.Category;
 import ittalentss11.traveller_online.model.pojo.Location;
 import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.pojo.User;
+import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
+
 @RestController
 public class UserController {
     public static final String USER_LOGGED = "logged";
@@ -27,6 +30,10 @@ public class UserController {
     private PostDAO postDAO;
     @Autowired
     private LocationDAO locationDAO;
+    @Autowired
+    private UserRepository userRepository;
+
+
     //USER REGISTRATION
     @SneakyThrows
     @PostMapping(value = "/users")
@@ -93,10 +100,9 @@ public class UserController {
         return post;
     }
 
-    //FOR TESTING
+    //FOR TESTING====================== MAKE SURE TO DELETE USERREPOSITORY AS WELL AFTER!!!!!!!!!!!!!!!!!!
     @GetMapping(value = "/test")
-    public String wazaa (){
-        String x = "All is fine";
-        return x;
+    public List<User> wazaa (){
+        return userRepository.findAll();
     }
 }

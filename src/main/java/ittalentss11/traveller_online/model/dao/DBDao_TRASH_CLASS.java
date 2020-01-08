@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class DBDao {
+public class DBDao_TRASH_CLASS {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
