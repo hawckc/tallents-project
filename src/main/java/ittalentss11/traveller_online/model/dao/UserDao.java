@@ -14,8 +14,8 @@ import java.sql.*;
 @Component
 public class UserDao {
 
-    public static final String INSERT_USER = "INSERT INTO final_project.user (first_name, last_name, username, password, email) VALUES (?, ?, ?, ?, ?);";
-    public static final String USER_BY_USERNAME = "SELECT * FROM final_project.user WHERE username = ?;";
+    public static final String INSERT_USER = "INSERT INTO final_project.users (first_name, last_name, username, password, email) VALUES (?, ?, ?, ?, ?);";
+    public static final String USER_BY_USERNAME = "SELECT * FROM final_project.users WHERE username = ?;";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -24,21 +24,21 @@ public class UserDao {
     private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
 
     //=========== USER REGISTRATION ==========/
-    //TODO: MAKE SURE TO USER CORRECT SQL QUERRIES
     //MAIL AVAILABILITY
     public boolean emailIsAvailable (String email){
-        int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.user WHERE email = ?;", new Object[]{email}, Integer.class);
+        //int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.users WHERE email = ?;", new Object[]{email}, Integer.class);
+        int result = userRepository.countUsersByEmailEquals(email);
         return result == 0;
     }
     //USERNAME AVAILABILITY
     public boolean usernameIsAvailable (String username){
-        int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.user WHERE username = ?;", new Object[]{username}, Integer.class);
+        //int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.users WHERE username = ?;", new Object[]{username}, Integer.class);
+        int result = userRepository.countUsersByUsernameEquals(username);
         return result == 0;
     }
     //USER REGISTRATION
     public UserNoSensitiveDTO register (User user){
         //hash is made by taking password and salting
-        //System.out.println(user.getPassword());
         String hash = argon2.hash(4, 1024 * 1024, 8, user.getPassword());
         jdbcTemplate.update(INSERT_USER,
                                 user.getFirstName(),
@@ -49,7 +49,7 @@ public class UserDao {
         return new UserNoSensitiveDTO(user);
     }
     public boolean foundUsernameForLogin(String username){
-        int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.user WHERE username = ?;", new Object[]{username}, Integer.class);
+        int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.users WHERE username = ?;", new Object[]{username}, Integer.class);
         return result == 1;
     }
     /*public String getHashByUser(String username){

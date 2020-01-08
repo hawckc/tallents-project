@@ -1,5 +1,4 @@
 package ittalentss11.traveller_online.model.pojo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import ittalentss11.traveller_online.model.dto.LocationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,8 +13,8 @@ import javax.persistence.*;
 @Setter
 @Component
 @AllArgsConstructor
-//@Entity
-//@Table(name = "locations")
+@Entity
+@Table(name = "locations")
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
