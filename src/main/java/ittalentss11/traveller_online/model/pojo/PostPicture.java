@@ -9,8 +9,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
-@Table(name = "post_pictures")
+//@Entity
+//@Table(name = "post_pictures")
 public class PostPicture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
