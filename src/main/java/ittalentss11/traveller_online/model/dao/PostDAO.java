@@ -16,7 +16,7 @@ public class PostDAO {
     private LocationDAO locationDAO;
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    private static final String INSERT_POST = "INSERT INTO final_project.posts (`user_id`,`description`,`location_id`,`category_id`) VALUES (?, ?, ?, ?);";
+    private static final String INSERT_POST = "INSERT INTO final_project.posts (user_id, description, location_id , category_id) VALUES (?, ?, ?, ?);";
 
     //User post a post
     public Post post(Post post) throws SQLException {

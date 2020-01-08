@@ -3,9 +3,11 @@ package ittalentss11.traveller_online.model.pojo;
 
 import ittalentss11.traveller_online.model.dto.UserRegDTO;
 import lombok.AllArgsConstructor;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 
@@ -13,8 +15,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 @AllArgsConstructor
+@Component
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

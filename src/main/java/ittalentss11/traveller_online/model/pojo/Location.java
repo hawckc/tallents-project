@@ -14,8 +14,8 @@ import javax.persistence.*;
 @Setter
 @Component
 @AllArgsConstructor
-@Entity
-@Table(name = "locations")
+//@Entity
+//@Table(name = "locations")
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

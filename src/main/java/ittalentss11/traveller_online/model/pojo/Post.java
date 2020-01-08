@@ -13,8 +13,8 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Component
-@Entity
-@Table(name = "posts")
+//@Entity
+//@Table(name = "posts")
 
 
 
@@ -23,8 +23,8 @@ import javax.persistence.*;
 
 public class Post {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
     @JoinColumn (name = "user_id")
@@ -35,11 +35,11 @@ public class Post {
     @ManyToOne
     @JoinColumn (name = "category_id")
     private Category category;
-    @Column
+    //@Column
     private String videoUrl;
-    @Column
+    //@Column
     private String description;
-    @Column
+    //@Column
     private String otherInfo;
 
 }

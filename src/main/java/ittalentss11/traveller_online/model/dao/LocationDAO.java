@@ -12,7 +12,7 @@ public class LocationDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     public static final String GET_BY_NAME = "SELECT * FROM final_project.locations WHERE name = ?;";
-    public static final String INSERT_LOCATION = "INSERT INTO final_project.locations (`name`, `coordinates`, `mapUrl` ) VALUES (?, ?, ?);";
+    public static final String INSERT_LOCATION = "INSERT INTO final_project.locations (name, coordinates, mapUrl ) VALUES (?, ?, ?);";
     public Location getByName(String name) throws SQLException {
         Connection connection = jdbcTemplate.getDataSource().getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_NAME, Statement.RETURN_GENERATED_KEYS)) {
