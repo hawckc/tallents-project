@@ -18,7 +18,6 @@ public class PostDTO {
     private Location location;
     @Autowired
     private Category category;
-    @Autowired
     private String description;
 
 }
