@@ -26,7 +26,7 @@ import javax.servlet.http.HttpSession;
 public class UserController {
     public static final String USER_LOGGED = "logged";
     @Autowired
-    private UserDao dao;
+    private UserDao userDao;
     @Autowired
     private PostDAO postDAO;
     @Autowired
@@ -38,36 +38,38 @@ public class UserController {
     public UserNoSensitiveDTO add (@RequestBody UserRegDTO user, HttpSession session){
         //VERIFICATIONS:
         //Check if username is available
-        if (!dao.usernameIsAvailable(user.getUsername())){
+        if (!userDao.usernameIsAvailable(user.getUsername())){
             throw new UsernameTaken();
         }
         //Check if email is not used already
-        if (!dao.emailIsAvailable(user.getEmail())){
+        if (!userDao.emailIsAvailable(user.getEmail())){
             throw new EmailTaken();
         }
         //Check if passwords match
         if (!user.getPassword().equals(user.getConfPassword())){
             throw new NoPassMatch();
         }
-        if (user.checkEmail(user.getEmail()) == false){
+        //Verify email validity
+        if (!user.checkEmail(user.getEmail())){
             throw new EmailRegisterCheck();
         }
-        //Create user and return it as confirmation // return a userdto which having username and email not user
+        //Create user and return UserDTO as confirmation
         User created = new User(user);
-        dao.register(created);
+        userDao.register(created);
         session.setAttribute(USER_LOGGED, created);
-        UserNoSensitiveDTO userNoSensitiveDTO = new UserNoSensitiveDTO(user);
+        UserNoSensitiveDTO userNoSensitiveDTO = new UserNoSensitiveDTO(created);
         return userNoSensitiveDTO;
     }
     @SneakyThrows
     @PostMapping(value = "/users/login")
     public UserNoSensitiveDTO login(@RequestBody UserLoginDTO userLoginDTO, HttpSession session){
-        //validate
-        if (dao.foundUsernameForLogin(userLoginDTO.getUsername()) == false){
-            throw new NoSuchUsername();
+        //Check if username exists
+        if (!userDao.foundUsernameForLogin(userLoginDTO.getUsername())){
+            throw new AuthorizationError();
         }
-        if (dao.foundUsernameForLogin(userLoginDTO.getUsername()) == true){
-            User u = dao.getUserByUsername(userLoginDTO.getUsername());
+        //If it does check for username/password match with BCrypt
+        if (userDao.foundUsernameForLogin(userLoginDTO.getUsername())){
+            User u = userDao.getUserByUsername(userLoginDTO.getUsername());
             String hash = userLoginDTO.getPassword();
             //boolean success = argon2.verify(u.getPassword(), userLoginDTO.getPassword());
             if (argon2.verify(u.getPassword(), userLoginDTO.getPassword()) == false){
@@ -94,9 +96,6 @@ public class UserController {
         post.setLocation(postDTO.getLocation());
         postDAO.post(post);
         return post;
-
-
-
     }
 
     //FOR TESTING

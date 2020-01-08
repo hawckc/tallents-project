@@ -15,17 +15,11 @@ public class UserNoSensitiveDTO {
     private String username;
     private String email;
     
-    public UserNoSensitiveDTO(UserRegDTO userRegDTO){
-        this.firstName = userRegDTO.getFirstName();
-        this.lastName = userRegDTO.getLastName();
-        this.username = userRegDTO.getUsername();
-        this.email = userRegDTO.getEmail();
-    }
-    public UserNoSensitiveDTO(User u){
-        this.firstName = u.getFirstName();
-        this.lastName = u.getLastName();
-        this.username = u.getUsername();
-        this.email = u.getEmail();
+    public UserNoSensitiveDTO(User user){
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.username = user.getUsername();
+        this.email = user.getEmail();
     }
 
 }

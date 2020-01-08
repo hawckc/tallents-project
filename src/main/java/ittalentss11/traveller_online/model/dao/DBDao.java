@@ -18,7 +18,6 @@ public class DBDao {
     public List<User> getAllUsers (){
         List<User> users = jdbcTemplate.query("SELECT first_name, last_name, username, password, email FROM final_project.users;", (resultSet, i) -> toUser(resultSet));
         return users;
-        // SELECT first_name, last_name, username, password, email FROM final_project.users;
     }
 
     //used by getAllUsers, it is here just for simplicity

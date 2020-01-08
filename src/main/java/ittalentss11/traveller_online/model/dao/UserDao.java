@@ -6,7 +6,6 @@ import ittalentss11.traveller_online.model.dto.UserNoSensitiveDTO;
 import ittalentss11.traveller_online.model.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
@@ -20,6 +19,7 @@ public class UserDao {
     private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
 
     //=========== USER REGISTRATION ==========/
+    //TODO: MAKE SURE TO USER CORRECT SQL QUERRIES
     //MAIL AVAILABILITY
     public boolean emailIsAvailable (String email){
         int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.user WHERE email = ?;", new Object[]{email}, Integer.class);

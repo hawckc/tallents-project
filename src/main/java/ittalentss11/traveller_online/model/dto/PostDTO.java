@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import lombok.AllArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 @Getter
 @Setter
@@ -14,9 +13,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Component
 public class PostDTO {
-    @Autowired
     private Location location;
-    @Autowired
     private Category category;
     private String description;
 
