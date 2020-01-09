@@ -99,15 +99,21 @@ public class UserController {
         }
         Post post = new Post();
         post.setUser(u);
+        //check if location is valid and has valid json
+        //check if category is valid
         post.setCategory(postDTO.getCategory());
+        //check if description is valid
         post.setDescription(postDTO.getDescription());
         //first we insert location
+        //take category id from categories with getbyname
+        //check if post is valid json
+        //insert location
+        //insert post
         locationDAO.insertLocation(post.getLocation());
         post.setLocation(postDTO.getLocation());
         postDAO.post(post);
         return post;
     }
-
     //FOR TESTING====================== MAKE SURE TO DELETE USERREPOSITORY AS WELL AFTER!!!!!!!!!!!!!!!!!!
     @GetMapping(value = "/test")
     public List<User> wazaa (){
