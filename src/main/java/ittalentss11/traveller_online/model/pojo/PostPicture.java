@@ -15,6 +15,8 @@ public class PostPicture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @ManyToOne
+    @JoinColumn(name = "posts_id")
     private Post post;
     @Column
     private String pictureUrl;

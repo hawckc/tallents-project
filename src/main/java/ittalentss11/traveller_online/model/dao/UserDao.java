@@ -4,6 +4,7 @@ import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import ittalentss11.traveller_online.model.dto.UserNoSensitiveDTO;
 import ittalentss11.traveller_online.model.pojo.User;
+import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -12,10 +13,14 @@ import java.sql.*;
 
 @Component
 public class UserDao {
+
     public static final String INSERT_USER = "INSERT INTO final_project.user (first_name, last_name, username, password, email) VALUES (?, ?, ?, ?, ?);";
     public static final String USER_BY_USERNAME = "SELECT * FROM final_project.user WHERE username = ?;";
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private UserRepository userRepository;
     private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
 
     //=========== USER REGISTRATION ==========/

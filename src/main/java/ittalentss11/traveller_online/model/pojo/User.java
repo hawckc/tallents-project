@@ -1,6 +1,6 @@
 package ittalentss11.traveller_online.model.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import ittalentss11.traveller_online.model.dto.UserRegDTO;
 import lombok.AllArgsConstructor;
 

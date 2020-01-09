@@ -9,4 +9,5 @@ import java.util.List;
 //TODO Finish up Repository folder and make corrections to old SQL queries
 @Repository
 public interface UserRepository  extends JpaRepository<User, Long> {
+
 }

@@ -26,8 +26,14 @@ public class Post {
     //@Id
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @ManyToOne
+    @JoinColumn (name = "user_id")
     private User user;
+    @ManyToOne
+    @JoinColumn (name = "location_id")
     private Location location;
+    @ManyToOne
+    @JoinColumn (name = "category_id")
     private Category category;
     //@Column
     private String videoUrl;
