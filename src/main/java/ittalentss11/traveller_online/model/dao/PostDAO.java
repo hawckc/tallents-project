@@ -3,6 +3,7 @@ import ittalentss11.traveller_online.model.dto.LocationDTO;
 import ittalentss11.traveller_online.model.dto.PostDTO;
 import ittalentss11.traveller_online.model.dto.UserRegDTO;
 import ittalentss11.traveller_online.model.pojo.Post;
+import ittalentss11.traveller_online.model.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -17,6 +18,7 @@ public class PostDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private static final String INSERT_POST = "INSERT INTO final_project.posts (user_id, description, location_id , category_id) VALUES (?, ?, ?, ?);";
+    private static final String GET_BY_ID = "SELECT * FROM final_projects.posts WHERE id = ?";
 
     //User post a post
     public Post post(Post post) throws SQLException {
@@ -32,5 +34,20 @@ public class PostDAO {
             post.setId(keys.getLong(1));
         }
         return post;
+    }
+
+    public Post getPostById(long id) throws SQLException {
+        Connection connection = jdbcTemplate.getDataSource().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_ID, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setLong(1, id);
+            ResultSet set = preparedStatement.executeQuery();
+            if (set.next()){
+                Post post = new Post();
+                //make select for location
+                //make select for category
+            }
+            return null;
+
+        }
     }
 }
