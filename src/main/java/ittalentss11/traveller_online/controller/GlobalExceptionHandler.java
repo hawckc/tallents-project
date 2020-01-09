@@ -76,6 +76,28 @@ public class GlobalExceptionHandler {
                 e.getClass().getName());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.UNAUTHORIZED);
     }
+    //POST CATEGORY handle
+    @ExceptionHandler(value = MissingCategoryException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ExceptionDTO> categoryException(Exception e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                e.getClass().getName());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
+    }
+    //POST COORDINATES handle
+    @ExceptionHandler(value = WrongCoordinatesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ExceptionDTO> coordinatesException(Exception e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                e.getClass().getName());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
+    }
 
     //GENERAL EXCEPTIONS
 
