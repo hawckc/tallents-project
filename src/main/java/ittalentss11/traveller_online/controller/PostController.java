@@ -1,6 +1,8 @@
 package ittalentss11.traveller_online.controller;
 
 import ittalentss11.traveller_online.controller.controller_exceptions.AuthorizationException;
+import ittalentss11.traveller_online.controller.controller_exceptions.MissingCategoryException;
+import ittalentss11.traveller_online.controller.controller_exceptions.WrongCoordinatesException;
 import ittalentss11.traveller_online.model.dao.CategoryDAO;
 import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dto.PostDTO;
@@ -36,15 +38,26 @@ public class PostController {
         // location verification (maybe add an API that will get us coordinates and location name from map url)
         //TODO: this code seems ugly, can we improve it?
         //TODO: how do we make sure that a user doesn't spam post the same thing? is it illegal at all?
+        //it's fine for me
+        //i do not think we care if a user posts the same post more than once
+        //location verifictaion is a bit too much.
         post.setUser(u);
         post.setDescription(postDTO.getDescription());
         post.setVideoUrl(postDTO.getVideoUrl());
         post.setOtherInfo(postDTO.getOtherInfo());
+        //validate if there is a category with id
+        Category category = categoryDAO.getCategoryById(postDTO.getCategoryId());
+        if (category == null){
+            throw new MissingCategoryException();
+        }
         post.setCategory(categoryDAO.getCategoryById(postDTO.getCategoryId()));
+        if (postDTO.checkCoordinates(postDTO.getCoordinates()) == false){
+            throw new WrongCoordinatesException();
+        }
         post.setCoordinates(postDTO.getCoordinates());
         post.setMapUrl(postDTO.getMapUrl());
         post.setLocationName(postDTO.getLocationName());
-        postDAO.post(post);
+        postDAO.addPost(post);
         //return post;
         //CHANGED THE RETURN TYPE TO STRING BECAUSE WE'RE RETURNING THE CRYPTED PASSWORD when returning
         //THE USER JSON
