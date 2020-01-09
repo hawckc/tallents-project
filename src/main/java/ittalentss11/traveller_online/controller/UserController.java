@@ -8,10 +8,7 @@ import ittalentss11.traveller_online.model.dao.LocationDAO;
 import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dao.UserDao;
 import ittalentss11.traveller_online.model.dto.*;
-import ittalentss11.traveller_online.model.pojo.Category;
-import ittalentss11.traveller_online.model.pojo.Location;
-import ittalentss11.traveller_online.model.pojo.Post;
-import ittalentss11.traveller_online.model.pojo.User;
+import ittalentss11.traveller_online.model.pojo.*;
 import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +111,25 @@ public class UserController {
         postDAO.post(post);
         return post;
     }
+    @SneakyThrows
+    @PostMapping("/comment/{id}")
+    public CommentDTO comment(@RequestBody CommentDTO commentDTO, @RequestParam("id") long id, HttpSession session){
+        User u = (User) session.getAttribute(USER_LOGGED);
+        if (u == null){
+            throw new AuthorizationError();
+        }
+        //select post
+        Post post = postDAO.getPostById(id);
+        if (post == null){
+            throw new WrongRequest();
+        }
+        //insert new comment
+        return null;
+
+
+
+    }
+
     //FOR TESTING====================== MAKE SURE TO DELETE USERREPOSITORY AS WELL AFTER!!!!!!!!!!!!!!!!!!
     @GetMapping(value = "/test")
     public List<User> wazaa (){
