@@ -13,18 +13,13 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Component
-//@Entity
-//@Table(name = "posts")
-
-
-
-//TODO make join for USER, LOCATION AND CATEGORY
-
+@Entity
+@Table(name = "posts")
 
 public class Post {
 
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne
     @JoinColumn (name = "user_id")

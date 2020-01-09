@@ -1,5 +1,4 @@
 package ittalentss11.traveller_online.model.pojo;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,18 +10,14 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Component
-//@Entity
-//@Table(name = "comments")
-
-
-//TODO make join for USER AND POST
-
+@Entity
+@Table(name = "comments")
 
 public class Comment {
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    //@Column
+    @Column
     private String text;
     @ManyToOne
     @JoinColumn(name = "post_id")
