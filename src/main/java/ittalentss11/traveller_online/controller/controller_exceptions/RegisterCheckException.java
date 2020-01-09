@@ -2,11 +2,11 @@ package ittalentss11.traveller_online.controller.controller_exceptions;
 
 import org.springframework.stereotype.Component;
 
-public class RegisterCheck extends Exception {
-    public RegisterCheck(String s) {
+public class RegisterCheckException extends Exception {
+    public RegisterCheckException(String s) {
         super(s);
     }
-    public RegisterCheck() {
+    public RegisterCheckException() {
         super("Something went wrong. Please verify your registration fields.");
     }
 }

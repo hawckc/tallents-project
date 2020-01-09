@@ -2,11 +2,13 @@ package ittalentss11.traveller_online.model.dao;
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
-import ittalentss11.traveller_online.model.dto.UserNoSensitiveDTO;
 import ittalentss11.traveller_online.model.pojo.User;
 import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
@@ -37,25 +39,26 @@ public class UserDao {
         return result == 0;
     }
     //USER REGISTRATION
-    public UserNoSensitiveDTO register (User user){
+    public void register (final User user){
         //hash is made by taking password and salting
-        String hash = argon2.hash(4, 1024 * 1024, 8, user.getPassword());
-        jdbcTemplate.update(INSERT_USER,
-                                user.getFirstName(),
-                                user.getLastName(),
-                                user.getUsername(),
-                                hash,
-                                user.getEmail());
-        return new UserNoSensitiveDTO(user);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        final String hash = argon2.hash(4, 1024 * 1024, 8, user.getPassword());
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(INSERT_USER);
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setString(3, user.getUsername());
+            ps.setString(4, hash);
+            ps.setString(5, user.getEmail());
+            return ps;
+        }, keyHolder);
+        user.setId((long)keyHolder.getKey());
     }
+
     public boolean foundUsernameForLogin(String username){
         int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.users WHERE username = ?;", new Object[]{username}, Integer.class);
         return result == 1;
     }
-    /*public String getHashByUser(String username){
-        String result = jdbcTemplate.queryForObject("SELECT password FROM final_project.user WHERE username = '"+username+"';", String.class);
-        return result;
-    }*/
     public User getUserByUsername(String username) throws SQLException {
         Connection connection = jdbcTemplate.getDataSource().getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(USER_BY_USERNAME, Statement.RETURN_GENERATED_KEYS)) {

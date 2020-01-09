@@ -69,11 +69,4 @@ public class UserRegDTO {
             return pattern.matcher(firstName).matches() && pattern.matcher(lastName).matches();
         }
     }
-
-    //Hashing of password
-//    public static String hashSecurity(String password, String username){
-//        String hash = password;
-//        hash = BCrypt.hashpw(hash, username);
-//        return hash;
-//    }
 }

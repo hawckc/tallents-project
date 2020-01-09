@@ -12,8 +12,12 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Component
 public class PostDTO {
-    private Location location;
-    private Category category;
+    private long categoryId;
+    private String coordinates;
+    private String mapUrl;
+    private String locationName;
     private String description;
+    private String videoUrl;
+    private String otherInfo;
 
 }

@@ -1,10 +1,10 @@
 package ittalentss11.traveller_online.controller.controller_exceptions;
 
-public class AuthorizationError extends Exception {
-    public AuthorizationError(String s) {
+public class AuthorizationException extends Exception {
+    public AuthorizationException(String s) {
         super(s);
     }
-    public AuthorizationError() {
+    public AuthorizationException() {
         super("You must be logged in.");
     }
 

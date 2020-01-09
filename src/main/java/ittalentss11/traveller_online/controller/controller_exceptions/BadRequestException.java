@@ -1,12 +1,12 @@
 package ittalentss11.traveller_online.controller.controller_exceptions;
 
-public class WrongRequest extends Exception {
+public class BadRequestException extends Exception {
 
-    public WrongRequest(String s){
+    public BadRequestException(String s){
 
         super(s);
     }
-    public WrongRequest(){
+    public BadRequestException(){
         super("Wrong request");
     }
 }
