@@ -7,10 +7,7 @@ import ittalentss11.traveller_online.controller.controller_exceptions.*;
 import ittalentss11.traveller_online.model.dao.LocationDAO;
 import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dao.UserDao;
-import ittalentss11.traveller_online.model.dto.PostDTO;
-import ittalentss11.traveller_online.model.dto.UserLoginDTO;
-import ittalentss11.traveller_online.model.dto.UserNoSensitiveDTO;
-import ittalentss11.traveller_online.model.dto.UserRegDTO;
+import ittalentss11.traveller_online.model.dto.*;
 import ittalentss11.traveller_online.model.pojo.Category;
 import ittalentss11.traveller_online.model.pojo.Location;
 import ittalentss11.traveller_online.model.pojo.Post;
@@ -18,8 +15,6 @@ import ittalentss11.traveller_online.model.pojo.User;
 import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -46,19 +41,27 @@ public class UserController {
         //VERIFICATIONS:
         //Check if username is available
         if (!userDao.usernameIsAvailable(user.getUsername())){
-            throw new UsernameTaken();
+            throw new UsernameTaken("This username already exists, please pick another one.");
         }
         //Check if email is not used already
         if (!userDao.emailIsAvailable(user.getEmail())){
-            throw new EmailTaken();
+            throw new EmailTaken("Email already exists, please pick another one.");
         }
         //Check if passwords match
         if (!user.getPassword().equals(user.getConfPassword())){
-            throw new NoPassMatch();
+            throw new NoPassMatch("Wrong password setup, please make sure to confirm your password.");
         }
         //Verify email validity
         if (!user.checkEmail(user.getEmail())){
-            throw new EmailRegisterCheck();
+            throw new RegisterCheck("You have entered an invalid email.");
+        }
+        //Verify username and password
+        if (!user.checkUsernameAndPass(user.getUsername(), user.getPassword())){
+            throw new RegisterCheck("Make sure that your username/password contains (3-40 characters) alphanumericals, dots, dashes or underscores");
+        }
+        //Verify first and last names
+        if (!user.firstAndLastNames(user.getFirstName(), user.getLastName())){
+            throw new RegisterCheck("Your first and last names must contain only alphabetical characters (2-40 chars)");
         }
         //Create user and return UserDTO as confirmation
         User created = new User(user);
@@ -72,15 +75,15 @@ public class UserController {
     public UserNoSensitiveDTO login(@RequestBody UserLoginDTO userLoginDTO, HttpSession session){
         //Check if username exists
         if (!userDao.foundUsernameForLogin(userLoginDTO.getUsername())){
-            throw new AuthorizationError();
+            throw new AuthorizationError("Wrong credentials, please verify your username and password.");
         }
-        //If it does check for username/password match with BCrypt
+        //If it does check for username/password match with argon2
         if (userDao.foundUsernameForLogin(userLoginDTO.getUsername())){
             User u = userDao.getUserByUsername(userLoginDTO.getUsername());
-            String hash = userLoginDTO.getPassword();
+            //String hash = userLoginDTO.getPassword();
             //boolean success = argon2.verify(u.getPassword(), userLoginDTO.getPassword());
-            if (argon2.verify(u.getPassword(), userLoginDTO.getPassword()) == false){
-                throw new AuthorizationError();
+            if (!argon2.verify(u.getPassword(), userLoginDTO.getPassword())){
+                throw new AuthorizationError("Wrong credentials, please verify your username and password.");
             }
             session.setAttribute(USER_LOGGED, u);
             return new UserNoSensitiveDTO(u.getFirstName(), u.getLastName(), u.getUsername(), u.getEmail());
