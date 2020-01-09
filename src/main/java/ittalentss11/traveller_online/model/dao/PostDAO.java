@@ -25,7 +25,7 @@ public class PostDAO {
 
     //User post a post
     //TODO: Verify if this works
-    public void post(Post post) throws SQLException {
+    public void addPost(Post post) throws SQLException {
         Connection connection = jdbcTemplate.getDataSource().getConnection();
         try(PreparedStatement ps = connection.prepareStatement(INSERT_POST, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, post.getUser().getId());
