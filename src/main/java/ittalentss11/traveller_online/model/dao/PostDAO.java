@@ -1,7 +1,4 @@
 package ittalentss11.traveller_online.model.dao;
-import ittalentss11.traveller_online.model.dto.LocationDTO;
-import ittalentss11.traveller_online.model.dto.PostDTO;
-import ittalentss11.traveller_online.model.dto.UserRegDTO;
 import ittalentss11.traveller_online.model.pojo.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -1,6 +1,5 @@
 package ittalentss11.traveller_online.model.dto;
 import ittalentss11.traveller_online.model.pojo.Category;
-import ittalentss11.traveller_online.model.pojo.Location;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

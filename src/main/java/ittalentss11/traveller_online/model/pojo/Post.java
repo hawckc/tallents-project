@@ -25,16 +25,19 @@ public class Post {
     @JoinColumn (name = "user_id")
     private User user;
     @ManyToOne
-    @JoinColumn (name = "location_id")
-    private Location location;
-    @ManyToOne
     @JoinColumn (name = "category_id")
     private Category category;
-    //@Column
+    @Column
     private String videoUrl;
-    //@Column
+    @Column
     private String description;
-    //@Column
+    @Column
     private String otherInfo;
+    @Column
+    private String coordinates;
+    @Column
+    private String mapUrl;
+    @Column
+    private String locationName;
 
 }

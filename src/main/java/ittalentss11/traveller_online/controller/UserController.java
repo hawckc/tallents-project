@@ -9,7 +9,6 @@ import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dao.UserDao;
 import ittalentss11.traveller_online.model.dto.*;
 import ittalentss11.traveller_online.model.pojo.Category;
-import ittalentss11.traveller_online.model.pojo.Location;
 import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.pojo.User;
 import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
