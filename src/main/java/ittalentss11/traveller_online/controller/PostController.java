@@ -12,7 +12,6 @@ import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.pojo.User;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,11 +36,6 @@ public class PostController {
         //mapUrl and location name
         //TODO: WE NEED VERIFICATIONS FOR: description not null and max 200 chars,
         // location verification (maybe add an API that will get us coordinates and location name from map url)
-        //TODO: this code seems ugly, can we improve it?
-        //TODO: how do we make sure that a user doesn't spam post the same thing? is it illegal at all?
-        //it's fine for me
-        //i do not think we care if a user posts the same post more than once
-        //location verifictaion is a bit too much.
         post.setUser(u);
         post.setDescription(postDTO.getDescription());
         post.setVideoUrl(postDTO.getVideoUrl());
@@ -52,7 +46,7 @@ public class PostController {
             throw new MissingCategoryException();
         }
         post.setCategory(categoryDAO.getCategoryById(postDTO.getCategoryId()));
-        if (postDTO.checkCoordinates(postDTO.getCoordinates()) == false){
+        if (!postDTO.checkCoordinates(postDTO.getCoordinates())){
             throw new WrongCoordinatesException();
         }
         post.setCoordinates(postDTO.getCoordinates());

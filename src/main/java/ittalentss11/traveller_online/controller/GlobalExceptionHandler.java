@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
     }
 
 
-    //LOGIN EXCEPTION HANDLER
+    //=================LOGIN EXCEPTION HANDLER=============
     @ExceptionHandler(value = AuthorizationException.class)
     public ResponseEntity<ExceptionDTO> loginException(Exception e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(
@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
     }
 
-    //GENERAL EXCEPTIONS
+    //==========GENERAL EXCEPTIONS=================//
 
     //SQL EXCEPTION
     //TODO IS THIS OK??? SHOULD I CHANGE THE CAPTION?
