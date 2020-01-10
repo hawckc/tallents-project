@@ -98,6 +98,17 @@ public class GlobalExceptionHandler {
                 e.getClass().getName());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
     }
+    //POST PICTURE handle
+    @ExceptionHandler(value = PostPicturePerPostException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ExceptionDTO> postPicturePerPost(Exception e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                e.getClass().getName());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
+    }
 
     //==========GENERAL EXCEPTIONS=================//
 
