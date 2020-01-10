@@ -1,14 +1,14 @@
 package ittalentss11.traveller_online.controller;
-
 import ittalentss11.traveller_online.controller.controller_exceptions.*;
 import ittalentss11.traveller_online.model.dto.ExceptionDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 import java.sql.SQLException;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 //TODO ADD GLOBAL HANDLERS SUCH AS SQL EXCEPTIONS AND OTHERS
@@ -64,8 +64,6 @@ public class GlobalExceptionHandler {
                 e.getClass().getName());
         return new ResponseEntity<ExceptionDTO>(exceptionDTO, HttpStatus.BAD_REQUEST);
     }
-
-
     //=================LOGIN EXCEPTION HANDLER=============
     @ExceptionHandler(value = AuthorizationException.class)
     public ResponseEntity<ExceptionDTO> loginException(Exception e){
@@ -102,6 +100,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = PostPicturePerPostException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ExceptionDTO> postPicturePerPost(Exception e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                e.getClass().getName());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(value = IOException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ExceptionDTO> postPictureIO(Exception e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(
                 e.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),

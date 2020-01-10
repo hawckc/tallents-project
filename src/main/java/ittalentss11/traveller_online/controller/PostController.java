@@ -89,8 +89,13 @@ public class PostController {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yy-mm-dd-hh-mm-ss");
         LocalDateTime localDateTime = LocalDateTime.now();
         String parse = localDateTime.format(dateTimeFormatter);
+        String nameWithout = all[0];
+        String formatForPicture = all[1];
         String nameWithId = all[0] + "_" + parse + "_" + user.getId() + "." + all[1];
         System.out.println(namesWhole);
+        if (formatForPicture.equals("png") == false){
+            throw new BadRequestException();
+        }
         File picture = new File(path + nameWithId);
         FileOutputStream fos = new FileOutputStream(picture);
         fos.write(multipartFile.getBytes());
