@@ -51,9 +51,38 @@ public class Post {
     )
     private List<User> usersThatLiked = new ArrayList<>();
 
-    public void addUser(User user) {
+    //TODO : make a method tha prevents stacking likes, dislikes and tags by one user
+    //for dislikes
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "dislikes",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> usersThatDisliked = new ArrayList<>();
+    //for tags
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "tags",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> usersTagged = new ArrayList<>();
+
+    public void addLikeByUser(User user) {
         usersThatLiked.add(user);
         user.getLikedPosts().add(this);
     }
-
+    public void addDislikeByUser(User user) {
+        usersThatDisliked.add(user);
+        user.getDislikedPosts().add(this);
+    }
+    public void addTaggedUser(User user) {
+        usersTagged.add(user);
+        user.getTaggedInPosts().add(this);
+    }
 }

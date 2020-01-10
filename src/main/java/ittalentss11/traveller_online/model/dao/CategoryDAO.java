@@ -33,7 +33,6 @@ public class CategoryDAO {
                 return c;
             }
             return null;
-
         }
     }
     public Category getCategoryById(long categoryId) throws BadRequestException {

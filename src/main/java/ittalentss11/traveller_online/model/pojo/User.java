@@ -29,10 +29,16 @@ public class User {
     private String email;
     @Column
     private String password;
-    //TODO: for likes
+    //For likes
     @ManyToMany(mappedBy = "usersThatLiked")
     private List<Post> likedPosts = new ArrayList<>();
-    //
+    //For dislikes
+    @ManyToMany(mappedBy = "usersThatDisliked")
+    private List<Post> dislikedPosts = new ArrayList<>();
+    //For tags
+    @ManyToMany(mappedBy = "usersTagged")
+    private List<Post> taggedInPosts = new ArrayList<>();
+
     public User(UserRegDTO userRegDTO){
         this.firstName = userRegDTO.getFirstName();
         this.lastName = userRegDTO.getLastName();
@@ -40,7 +46,6 @@ public class User {
         this.email = userRegDTO.getEmail();
         this.password = userRegDTO.getPassword();
     }
-    //TODO: for likes
     public User (long id, String firstName, String lastName, String username, String email, String password){
         this.id = id;
         this.firstName = firstName;

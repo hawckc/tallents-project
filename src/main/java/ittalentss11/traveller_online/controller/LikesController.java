@@ -29,8 +29,23 @@ public class LikesController {
         }
         //Getting and verifying post ID
         Post post = postDAO.getPostById(id);
-        post.addUser(u);
+        post.addLikeByUser(u);
         postRepository.save(post);
         return "You just liked that post!";
+    }
+
+    @SneakyThrows
+    @GetMapping("/dislikes/{id}")
+    public String dislikePost(@PathVariable("id") Long id, HttpSession session){
+        //Is the user logged in?
+        User u = (User) session.getAttribute(UserController.USER_LOGGED);
+        if (u == null){
+            throw new AuthorizationException();
+        }
+        //Getting and verifying post ID
+        Post post = postDAO.getPostById(id);
+        post.addDislikeByUser(u);
+        postRepository.save(post);
+        return "You just disliked that post!";
     }
 }

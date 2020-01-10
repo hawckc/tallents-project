@@ -2,6 +2,7 @@ package ittalentss11.traveller_online.model.dao;
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
+import ittalentss11.traveller_online.controller.controller_exceptions.BadRequestException;
 import ittalentss11.traveller_online.model.pojo.User;
 import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
+import java.util.Optional;
 
 @Component
 public class UserDAO {
@@ -76,5 +78,12 @@ public class UserDAO {
             return null;
 
         }
+    }
+    public User getUserById(Long uId) throws BadRequestException {
+        Optional<User> optionalUser = userRepository.findById(uId);
+        if (optionalUser.isPresent()){
+            return optionalUser.get();
+        }
+        throw new BadRequestException("Sorry, this user does not exist.");
     }
 }
