@@ -7,6 +7,9 @@ import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -14,45 +17,42 @@ import org.springframework.stereotype.Component;
 import java.sql.*;
 
 @Component
-public class UserDao {
-
-    public static final String INSERT_USER = "INSERT INTO final_project.users (first_name, last_name, username, password, email) VALUES (?, ?, ?, ?, ?);";
+public class UserDAO {
+    public static final String INSERT_USER = "INSERT INTO final_project.users (first_name, last_name, username, password, email) VALUES (:first_name, :last_name, :username, :password, :email);";
     public static final String USER_BY_USERNAME = "SELECT * FROM final_project.users WHERE username = ?;";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
 
     //=========== USER REGISTRATION ==========/
     //MAIL AVAILABILITY
     public boolean emailIsAvailable (String email){
-        //int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.users WHERE email = ?;", new Object[]{email}, Integer.class);
         int result = userRepository.countUsersByEmailEquals(email);
         return result == 0;
     }
     //USERNAME AVAILABILITY
     public boolean usernameIsAvailable (String username){
-        //int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.users WHERE username = ?;", new Object[]{username}, Integer.class);
         int result = userRepository.countUsersByUsernameEquals(username);
         return result == 0;
     }
     //USER REGISTRATION
     public void register (final User user){
         //hash is made by taking password and salting
-        KeyHolder keyHolder = new GeneratedKeyHolder();
         final String hash = argon2.hash(4, 1024 * 1024, 8, user.getPassword());
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(INSERT_USER);
-            ps.setString(1, user.getFirstName());
-            ps.setString(2, user.getLastName());
-            ps.setString(3, user.getUsername());
-            ps.setString(4, hash);
-            ps.setString(5, user.getEmail());
-            return ps;
-        }, keyHolder);
-        user.setId((long)keyHolder.getKey());
+        KeyHolder holder = new GeneratedKeyHolder();
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("first_name", user.getFirstName())
+                .addValue("last_name", user.getLastName())
+                .addValue("username", user.getUsername())
+                .addValue("password", hash)
+                .addValue("email", user.getEmail());
+        namedParameterJdbcTemplate.update(INSERT_USER, parameters, holder);
+        user.setId(holder.getKey().longValue());
     }
 
     public boolean foundUsernameForLogin(String username){

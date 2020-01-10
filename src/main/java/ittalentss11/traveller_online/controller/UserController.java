@@ -4,7 +4,7 @@ import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import ittalentss11.traveller_online.controller.controller_exceptions.*;
 
-import ittalentss11.traveller_online.model.dao.UserDao;
+import ittalentss11.traveller_online.model.dao.UserDAO;
 import ittalentss11.traveller_online.model.dto.*;
 import ittalentss11.traveller_online.model.pojo.*;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public class UserController {
     public static final String USER_LOGGED = "logged";
     @Autowired
-    private UserDao userDao;
+    private UserDAO userDao;
     @Autowired
     private UserRepository userRepository;
 
