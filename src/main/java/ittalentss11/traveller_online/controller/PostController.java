@@ -1,27 +1,33 @@
 package ittalentss11.traveller_online.controller;
-import ittalentss11.traveller_online.controller.controller_exceptions.AuthorizationException;
-import ittalentss11.traveller_online.controller.controller_exceptions.BadRequestException;
-import ittalentss11.traveller_online.controller.controller_exceptions.MissingCategoryException;
-import ittalentss11.traveller_online.controller.controller_exceptions.WrongCoordinatesException;
-
+import ittalentss11.traveller_online.controller.controller_exceptions.*;
 import ittalentss11.traveller_online.model.dao.CategoryDAO;
 import ittalentss11.traveller_online.model.dao.PostDAO;
+import ittalentss11.traveller_online.model.dao.PostPictureDao;
+
 import ittalentss11.traveller_online.model.dto.PostDTO;
 import ittalentss11.traveller_online.model.pojo.Category;
 import ittalentss11.traveller_online.model.pojo.Post;
+import ittalentss11.traveller_online.model.pojo.PostPicture;
 import ittalentss11.traveller_online.model.pojo.User;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @RestController
 public class PostController {
     @Autowired
     private PostDAO postDAO;
     @Autowired
     private CategoryDAO categoryDAO;
+    @Autowired
+    private PostPictureDao postPictureDao;
+    private static final int MAX_PICTURES = 3;
     //Posting a post:
     @SneakyThrows
     @PostMapping("/posts")
@@ -58,7 +64,7 @@ public class PostController {
         return "Your post was successfully added!";
     }
     @SneakyThrows
-    @PutMapping("/posts/{id}/upload")
+    @PostMapping("/posts/{id}/upload")
     public String addPicture(@RequestPart(value = "picture") MultipartFile multipartFile, @PathVariable("id") long id,
                              HttpSession session){
         //first we check if the use is logged
@@ -71,10 +77,34 @@ public class PostController {
         if (post == null){
             throw new BadRequestException();
         }
+        if (postPictureDao.getAllPictures((int) post.getId()) > MAX_PICTURES){
+            throw new PostPicturePerPostException();
+        }
+        if (post.getUser() != user){
+            throw new AuthorizationException();
+        }
+        String namesWhole = multipartFile.getOriginalFilename();
+        String path = "C://posts//png//";
+        String[] all = namesWhole.split("\\.", 2);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yy-mm-dd-hh-mm-ss");
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String parse = localDateTime.format(dateTimeFormatter);
+        String nameWithId = all[0] + "_" + parse + "_" + user.getId() + "." + all[1];
+        System.out.println(namesWhole);
+        File picture = new File(path + nameWithId);
+        FileOutputStream fos = new FileOutputStream(picture);
+        fos.write(multipartFile.getBytes());
+        fos.close();
+        PostPicture postPicture = new PostPicture();
+        postPictureDao.addPostPicture(post, nameWithId);
+        postPicture.setPost(post);
+        postPicture.setPictureUrl(nameWithId);
+        //check if there are no more than 3 pictures
+        //check if the file is a picture
         // create a folder with the same name d:/tallents/png
         //name the file picture_url_id.png
         //move to folder
         //write in posts_pictures post_id and picture url
-        return multipartFile.getName();
+        return picture.getName();
     }
 }
