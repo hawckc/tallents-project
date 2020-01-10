@@ -19,7 +19,7 @@ public class PostDAO {
 
     private static final String INSERT_POST =
             "INSERT INTO final_project.posts " +
-            "(user_id, description, category_id , coordinates, map_url, location_name, video_url, other_info) " +
+            "(user_id, video_url, description , other_info, category_id, coordinates, map_url, location_name) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
     private static final String GET_BY_ID = "SELECT * FROM final_projects.posts WHERE id = ?";
 
@@ -28,14 +28,14 @@ public class PostDAO {
     public void addPost(Post post) throws SQLException {
         Connection connection = jdbcTemplate.getDataSource().getConnection();
         try(PreparedStatement ps = connection.prepareStatement(INSERT_POST, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setLong(1, post.getUser().getId());
-            ps.setString(2, post.getDescription());
-            ps.setLong(3, post.getCategory().getId());
-            ps.setString(4, post.getCoordinates());
-            ps.setString(5, post.getMapUrl());
-            ps.setString(6, post.getLocationName());
-            ps.setString(7, post.getVideoUrl());
-            ps.setString(8, post.getOtherInfo());
+            ps.setInt(1, (int) post.getUser().getId());
+            ps.setString(2, post.getVideoUrl());
+            ps.setString(3, post.getDescription());
+            ps.setString(4, post.getOtherInfo());
+            ps.setInt(5, (int) post.getCategory().getId());
+            ps.setString(6, post.getCoordinates());
+            ps.setString(7, post.getMapUrl());
+            ps.setString(8, post.getLocationName());
             ps.executeUpdate();
             ResultSet keys = ps.getGeneratedKeys();
             keys.next();
