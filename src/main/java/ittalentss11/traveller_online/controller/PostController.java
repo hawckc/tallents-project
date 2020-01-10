@@ -43,15 +43,16 @@ public class PostController {
         //i do not think we care if a user posts the same post more than once
         //location verifictaion is a bit too much.
         post.setUser(u);
+        System.out.println(post.getUser().getId());
         post.setDescription(postDTO.getDescription());
         post.setVideoUrl(postDTO.getVideoUrl());
         post.setOtherInfo(postDTO.getOtherInfo());
         //validate if there is a category with id
-        Category category = categoryDAO.getCategoryById(postDTO.getCategoryId());
+        Category category = categoryDAO.getByName(postDTO.getCategoryName());
         if (category == null){
             throw new MissingCategoryException();
         }
-        post.setCategory(categoryDAO.getCategoryById(postDTO.getCategoryId()));
+        post.setCategory(category);
         if (postDTO.checkCoordinates(postDTO.getCoordinates()) == false){
             throw new WrongCoordinatesException();
         }
