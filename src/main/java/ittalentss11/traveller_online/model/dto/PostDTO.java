@@ -18,19 +18,18 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 @Component
 public class PostDTO {
-    private long categoryId;
+    private String categoryName;
     @NotNull(message = "Please fill coordinates.")
     @NotBlank(message = "Your coordinates cannot be empty.")
     private String coordinates;
-    @NotNull(message = "Please fill coordinates.")
-    @NotBlank(message = "Your coordinates cannot be empty.")
-    private String mapUrl;
     @NotNull(message = "Please fill mapurl.")
     @NotBlank(message = "Your mapurl cannot be empty.")
+    private String mapUrl;
+    @NotNull(message = "Please fill location.")
+    @NotBlank(message = "Your location cannot be empty.")
     private String locationName;
-    @NotNull(message = "Please fill coordinates.")
-    @NotBlank(message = "Your coordinates cannot be empty.")
-    @Size(min = 1, max = 200)
+    @NotNull(message = "Please fill description.")
+    @NotBlank(message = "Your description cannot be empty.")
     private String description;
     private String videoUrl;
     private String otherInfo;

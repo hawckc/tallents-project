@@ -19,13 +19,13 @@ public class CategoryDAO {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public static final String GET_BY_NAME = "SELECT * FROM final_project.locations WHERE name = ?;";
+    public static final String GET_BY_NAME = "SELECT * FROM final_project.categories WHERE name LIKE ?;";
 
     //what is that for?
     public Category getByName(String name) throws SQLException {
         Connection connection = jdbcTemplate.getDataSource().getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_NAME, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, "name");
+            preparedStatement.setString(1, "%" + name + "%");
             ResultSet set = preparedStatement.executeQuery();
             if (set.next()){
                 Category c = new Category(set.getLong("id"),
