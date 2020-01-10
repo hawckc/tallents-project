@@ -1,13 +1,13 @@
 package ittalentss11.traveller_online.model.pojo;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-
+import java.util.ArrayList;
+import java.util.List;
+//equals and hashcode is for many to many (likes)
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -39,5 +39,21 @@ public class Post {
     private String mapUrl;
     @Column
     private String locationName;
+
+    //for likes
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "likes",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> usersThatLiked = new ArrayList<>();
+
+    public void addUser(User user) {
+        usersThatLiked.add(user);
+        user.getLikedPosts().add(this);
+    }
 
 }
