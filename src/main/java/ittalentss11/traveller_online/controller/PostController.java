@@ -46,9 +46,7 @@ public class PostController {
         }
         post.setCategory(category);
         if (postDTO.checkCoordinates(postDTO.getCoordinates()) == false) {
-            if (!postDTO.checkCoordinates(postDTO.getCoordinates())) {
                 throw new WrongCoordinatesException();
-            }
         }
         post.setCoordinates(postDTO.getCoordinates());
         post.setMapUrl(postDTO.getMapUrl());
