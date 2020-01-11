@@ -160,7 +160,7 @@ public class PostController {
     //TODO: make sure you dont tag people on posts that aren't yours
     @SneakyThrows
     @GetMapping("/posts/{pId}/users/{uId}")
-    public String likePost(@PathVariable("pId") Long pId, @PathVariable("uId") Long uId, HttpSession session){
+    public String tagSomeone(@PathVariable("pId") Long pId, @PathVariable("uId") Long uId, HttpSession session){
         //Is the user logged in?
         User u = (User) session.getAttribute(UserController.USER_LOGGED);
         if (u == null){

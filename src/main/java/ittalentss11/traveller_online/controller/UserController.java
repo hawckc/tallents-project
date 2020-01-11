@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
+//TODO : WE NEED TO ADD MODIFICATIONS (change pass, names?, delete post, edit post)
+
 @RestController
 public class UserController {
     public static final String USER_LOGGED = "logged";
@@ -77,6 +79,21 @@ public class UserController {
         }
         session.setAttribute(USER_LOGGED, u);
         return new UserNoSensitiveDTO(u.getFirstName(), u.getLastName(), u.getUsername(), u.getEmail());
+    }
+    @SneakyThrows
+    @GetMapping(value = "/follow/{id}")
+    public UserNoSensitiveDTO followUser (@PathVariable("id") Long id, HttpSession session){
+        //Is the user logged in?
+        User u = (User) session.getAttribute(UserController.USER_LOGGED);
+        if (u == null){
+            throw new AuthorizationException();
+        }
+        //Getting and verifying user ID
+        User followUser = userDao.getUserById(id);
+        followUser.addFollower(u);
+        userRepository.save(followUser);
+        return new UserNoSensitiveDTO
+                (followUser.getFirstName(), followUser.getLastName(), followUser.getUsername(), followUser.getEmail());
     }
 
     //FOR TESTING====================== MAKE SURE TO DELETE USERREPOSITORY AS WELL AFTER!!!!!!!!!!!!!!!!!!
