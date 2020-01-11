@@ -30,6 +30,7 @@ public class PostController {
     private CategoryDAO categoryDAO;
     @Autowired
     private PostRepository postRepository;
+    @Autowired
     private PostPictureDao postPictureDao;
     private static final int MAX_PICTURES = 3;
 
@@ -82,13 +83,13 @@ public class PostController {
         if (postPictureDao.getAllPictures((int) post.getId()) > MAX_PICTURES){
             throw new PostPicturePerPostException();
         }
-        if (post.getUser() != user){
-            throw new AuthorizationException();
+        if (post.getUser().getUsername().equals(user.getUsername()) == false){
+            throw new BadRequestException();
         }
         String namesWhole = multipartFile.getOriginalFilename();
         String path = "C://posts//png//";
         String[] all = namesWhole.split("\\.", 2);
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yy-mm-dd-hh-mm-ss");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yy-MM-dd-hh-mm-ss");
         LocalDateTime localDateTime = LocalDateTime.now();
         String parse = localDateTime.format(dateTimeFormatter);
         String nameWithout = all[0];
