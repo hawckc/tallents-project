@@ -3,6 +3,7 @@ package ittalentss11.traveller_online.model.dao;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import ittalentss11.traveller_online.controller.controller_exceptions.BadRequestException;
+import ittalentss11.traveller_online.model.dto.PostDTO;
 import ittalentss11.traveller_online.model.pojo.User;
 import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,18 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 
 @Component
 public class UserDAO {
     public static final String INSERT_USER = "INSERT INTO final_project.users (first_name, last_name, username, password, email) VALUES (:first_name, :last_name, :username, :password, :email);";
     public static final String USER_BY_USERNAME = "SELECT * FROM final_project.users WHERE username = ?;";
+    public static final String USER_NEWS_FEED = "SELECT userFollowUsers.username, p.* FROM users AS userFollowsUsers" +
+            " JOIN users_follow_users AS users_followedBy_user ON userFollowsUsers.id = users_followedBy_user.follower_id" +
+            " JOIN tags AS t ON users_followedBy_user.followed_id = t.user_id" +
+            " JOIN posts as p ON t.post_id = p.id WHERE userFollowUsers.id = ?;";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -89,5 +96,32 @@ public class UserDAO {
 
     public void save(User user) {
         userRepository.save(user);
+    }
+    public HashMap<String, ArrayList<PostDTO>> getNewsFeed(User user) throws SQLException {
+        Connection connection = jdbcTemplate.getDataSource().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(USER_NEWS_FEED, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setInt(1, (int) user.getId());
+            ResultSet set = preparedStatement.executeQuery();
+            HashMap<String, ArrayList<PostDTO>> usersWithPosts = new HashMap<>();
+            while (set.next()){
+                String username = set.getString("userFollowUsers.username");
+                if (usersWithPosts.containsKey(username) == false){
+                    usersWithPosts.put(username, new ArrayList<>());
+                }
+                PostDTO postDTO = new PostDTO();
+                //join category to get category name
+                postDTO.setCategoryName(set.getString("p.category_id"));
+                postDTO.setDescription(set.getString("p.description"));
+                postDTO.setMapUrl(set.getString("p.map_url"));
+                postDTO.setOtherInfo(set.getString("p.other_info"));
+                postDTO.setCoordinates(set.getString("p.coordinates"));
+                postDTO.setVideoUrl(set.getString("p.video_url"));
+                ArrayList<PostDTO> arr = usersWithPosts.get(username);
+                arr.add(postDTO);
+                usersWithPosts.put(username, arr);
+            }
+            return usersWithPosts;
+
+        }
     }
 }
