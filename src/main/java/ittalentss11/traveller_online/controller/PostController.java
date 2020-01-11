@@ -11,6 +11,8 @@ import ittalentss11.traveller_online.model.pojo.PostPicture;
 import ittalentss11.traveller_online.model.pojo.User;
 import ittalentss11.traveller_online.model.repository_ORM.PostRepository;
 import lombok.SneakyThrows;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,8 +30,6 @@ public class PostController {
     private UserDAO userDAO;
     @Autowired
     private CategoryDAO categoryDAO;
-    @Autowired
-    private PostRepository postRepository;
     @Autowired
     private PostPictureDao postPictureDao;
     private static final int MAX_PICTURES = 3;
@@ -94,11 +94,13 @@ public class PostController {
         String parse = localDateTime.format(dateTimeFormatter);
         String nameWithout = all[0];
         String formatForPicture = all[1];
-        String nameWithId = all[0] + "_" + parse + "_" + user.getId() + "." + all[1];
+        String nameWithId = nameWithout + "_" + parse + "_" + user.getId() + "." + all[1];
         System.out.println(namesWhole);
         if (formatForPicture.equals("png") == false){
-            throw new BadRequestException();
+            //TODO : Finish message with all supported formats
+            throw new BadRequestException("Your picture format is not supported, please make sure to attach .png....");
         }
+        //TODO : put the picture upload in a different thread
         File picture = new File(path + nameWithId);
         FileOutputStream fos = new FileOutputStream(picture);
         fos.write(multipartFile.getBytes());
@@ -126,12 +128,10 @@ public class PostController {
         if (u == null){
             throw new AuthorizationException();
         }
-        //Getting and verifying post ID
-        //TODO: can we optimize 2 queries in 1?
         Post post = postDAO.getPostById(pId);
         User taggedUser = userDAO.getUserById(uId);
         post.addTaggedUser(taggedUser);
-        postRepository.save(post);
+        postDAO.save(post);
         return "You just tagged someone!";
     }
 }

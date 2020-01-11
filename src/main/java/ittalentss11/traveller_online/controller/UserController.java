@@ -51,11 +51,13 @@ public class UserController {
         }
         //Verify username and password
         if (!user.checkUsernameAndPass(user.getUsername(), user.getPassword())){
-            throw new RegisterCheckException("Make sure that your username/password contains (3-40 characters) alphanumericals, dots, dashes or underscores");
+            throw new RegisterCheckException("Make sure that your username/password " +
+                    "contains (3-40 characters) alphanumericals, dots, dashes or underscores");
         }
         //Verify first and last names
         if (!user.firstAndLastNames(user.getFirstName(), user.getLastName())){
-            throw new RegisterCheckException("Your first and last names must contain only alphabetical characters (2-40 chars)");
+            throw new RegisterCheckException("Your first and last names must " +
+                    "contain only alphabetical characters (2-40 chars)");
         }
         //Create user and return UserDTO as confirmation
         User created = new User(user);

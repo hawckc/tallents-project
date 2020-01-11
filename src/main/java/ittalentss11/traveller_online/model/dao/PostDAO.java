@@ -23,7 +23,6 @@ public class PostDAO {
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
     //User post a post
-    //TODO: Verify if this works
     public void addPost(Post post) throws SQLException {
         Connection connection = jdbcTemplate.getDataSource().getConnection();
         try(PreparedStatement ps = connection.prepareStatement(INSERT_POST, Statement.RETURN_GENERATED_KEYS)) {
@@ -48,5 +47,9 @@ public class PostDAO {
             return optionalPost.get();
         }
         throw new BadRequestException("Sorry, that post doesn't exist");
+    }
+
+    public void save(Post post) {
+        postRepository.save(post);
     }
 }
