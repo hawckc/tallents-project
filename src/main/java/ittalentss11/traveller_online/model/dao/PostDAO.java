@@ -22,6 +22,7 @@ public class PostDAO {
             "(user_id, video_url, description , other_info, category_id, coordinates, map_url, location_name) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
+    public static final String UPDATE_POST_FOR_VIDEOS = "UPDATE final_project.posts SET video_url = ? WHERE id = ?;";
     //User post a post
     //TODO: Verify if this works
     public void addPost(Post post) throws SQLException {
@@ -41,6 +42,16 @@ public class PostDAO {
             post.setId(keys.getLong(1));
         }
     }
+    public void addVideos(Post post, String name) throws SQLException {
+        Connection connection = jdbcTemplate.getDataSource().getConnection();
+        try(PreparedStatement ps = connection.prepareStatement(UPDATE_POST_FOR_VIDEOS, Statement.RETURN_GENERATED_KEYS)){
+            ps.setString(1, name);
+            ps.setInt(2, (int) post.getId());
+            ps.executeUpdate();
+        }
+    }
+
+
 
     public Post getPostById(long id) throws BadRequestException {
         Optional<Post> optionalPost = postRepository.findById(id);
