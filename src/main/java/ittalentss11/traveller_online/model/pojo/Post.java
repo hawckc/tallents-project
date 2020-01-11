@@ -4,10 +4,8 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-//equals and hashcode is for many to many (likes)
-@EqualsAndHashCode
+import java.util.*;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -49,7 +47,7 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> usersThatLiked = new ArrayList<>();
+    private Set<User> usersThatLiked = new HashSet<>();
 
     //TODO : make a method tha prevents stacking likes, dislikes and tags by one user
     //for dislikes
@@ -61,7 +59,7 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> usersThatDisliked = new ArrayList<>();
+    private Set<User> usersThatDisliked = new HashSet<>();
     //for tags
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
@@ -71,7 +69,7 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> usersTagged = new ArrayList<>();
+    private Set<User> usersTagged = new HashSet<>();
 
     public void addLikeByUser(User user) {
         usersThatLiked.add(user);
@@ -84,5 +82,18 @@ public class Post {
     public void addTaggedUser(User user) {
         usersTagged.add(user);
         user.getTaggedInPosts().add(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return id == post.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
