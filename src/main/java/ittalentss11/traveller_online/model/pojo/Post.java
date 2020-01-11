@@ -49,7 +49,6 @@ public class Post {
     )
     private Set<User> usersThatLiked = new HashSet<>();
 
-    //TODO : make a method tha prevents stacking likes, dislikes and tags by one user
     //for dislikes
     @ManyToMany(cascade = {
             CascadeType.PERSIST,
@@ -75,9 +74,23 @@ public class Post {
         usersThatLiked.add(user);
         user.getLikedPosts().add(this);
     }
+    public void removeLikeByUser(User user) {
+        usersThatLiked.remove(user);
+        user.getLikedPosts().remove(this);
+    }
+    public boolean isLikedByUser (User user){
+        return this.usersThatLiked.contains(user);
+    }
     public void addDislikeByUser(User user) {
         usersThatDisliked.add(user);
         user.getDislikedPosts().add(this);
+    }
+    public void removeDislikeByUser(User user) {
+        usersThatDisliked.remove(user);
+        user.getDislikedPosts().remove(this);
+    }
+    public boolean isDislikedByUser (User user){
+        return this.usersThatLiked.contains(user);
     }
     public void addTaggedUser(User user) {
         usersTagged.add(user);

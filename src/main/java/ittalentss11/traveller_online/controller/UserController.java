@@ -1,20 +1,15 @@
 package ittalentss11.traveller_online.controller;
-
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import ittalentss11.traveller_online.controller.controller_exceptions.*;
-
 import ittalentss11.traveller_online.model.dao.UserDAO;
 import ittalentss11.traveller_online.model.dto.*;
 import ittalentss11.traveller_online.model.pojo.*;
-
-import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 //TODO : WE NEED TO ADD MODIFICATIONS (change pass, names?, delete post, edit post)
 
@@ -23,9 +18,6 @@ public class UserController {
     public static final String USER_LOGGED = "logged";
     @Autowired
     private UserDAO userDao;
-    @Autowired
-    private UserRepository userRepository;
-
     private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
 
     //USER REGISTRATION
@@ -93,14 +85,8 @@ public class UserController {
         //Getting and verifying user ID
         User followUser = userDao.getUserById(id);
         followUser.addFollower(u);
-        userRepository.save(followUser);
+        userDao.save(followUser);
         return new UserNoSensitiveDTO
                 (followUser.getFirstName(), followUser.getLastName(), followUser.getUsername(), followUser.getEmail());
-    }
-
-    //FOR TESTING====================== MAKE SURE TO DELETE USERREPOSITORY AS WELL AFTER!!!!!!!!!!!!!!!!!!
-    @GetMapping(value = "/test")
-    public List<User> wazaa (){
-        return userRepository.findAll();
     }
 }

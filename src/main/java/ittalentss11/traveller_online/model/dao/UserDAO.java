@@ -86,4 +86,8 @@ public class UserDAO {
         }
         throw new BadRequestException("Sorry, this user does not exist.");
     }
+
+    public void save(User user) {
+        userRepository.save(user);
+    }
 }

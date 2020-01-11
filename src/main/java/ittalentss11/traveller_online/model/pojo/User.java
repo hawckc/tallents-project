@@ -26,15 +26,18 @@ public class User {
     private String email;
     @Column
     private String password;
-    //For likes
+    //For post likes
     @ManyToMany(mappedBy = "usersThatLiked")
     private Set<Post> likedPosts = new HashSet<>();
-    //For dislikes
+    //For post dislikes
     @ManyToMany(mappedBy = "usersThatDisliked")
     private Set<Post> dislikedPosts = new HashSet<>();
     //For tags
     @ManyToMany(mappedBy = "usersTagged")
     private Set<Post> taggedInPosts = new HashSet<>();
+    //For comment likes
+    @ManyToMany(mappedBy = "usersThatLikedComment")
+    private Set<Comment> likedComments = new HashSet<>();
 
     //Followers
     @ManyToMany(cascade = {
@@ -65,7 +68,7 @@ public class User {
         this.email = email;
         this.password = password;
     }
-    //TODO : WE NEED TO UNFOLLOW.
+    //TODO : DO WE NEED TO UNFOLLOW?
     public void addFollower(User user) {
         followers.add(user);
         user.following.add(this);

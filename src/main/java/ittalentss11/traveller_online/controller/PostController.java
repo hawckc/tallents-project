@@ -65,9 +65,9 @@ public class PostController {
         postDAO.addPost(post);
         return "Your post was successfully added!";
     }
-
+    //Changed postmapping url from /posts/{id}/upload to /posts/{id}/pictures
     @SneakyThrows
-    @PostMapping("/posts/{id}/upload")
+    @PostMapping("/posts/{id}/pictures")
     public String addPicture(@RequestPart(value = "picture") MultipartFile multipartFile, @PathVariable("id") long id,
                              HttpSession session){
         //first we check if the use is logged
@@ -78,14 +78,17 @@ public class PostController {
         // we check if there is a post with id
         Post post = postDAO.getPostById(id);
         if (post == null){
+            //TODO this is unreachable because getPostById throws the exception already
             throw new BadRequestException();
         }
-        if (postPictureDao.getAllPictures((int) post.getId()) > MAX_PICTURES){
+        if (postPictureDao.getAllPictures((int) post.getId()) >= MAX_PICTURES){
             throw new PostPicturePerPostException();
         }
         if (post.getUser().getUsername().equals(user.getUsername()) == false){
             throw new BadRequestException();
         }
+        //TODO: this is not reached, if i dont attach anything it says 500 in postman:
+        // "Current request is not a multipart request"
         if (multipartFile == null){
             throw new BadRequestException();
         }
@@ -96,6 +99,7 @@ public class PostController {
         }
         File picture = new File(pictureName);
         FileOutputStream fos = new FileOutputStream(picture);
+        //TODO writing of the file should be done in another thread
         fos.write(multipartFile.getBytes());
         fos.close();
         PostPicture postPicture = new PostPicture();
@@ -148,15 +152,13 @@ public class PostController {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yy-MM-dd-hh-mm-ss");
         LocalDateTime localDateTime = LocalDateTime.now();
         String parse = localDateTime.format(dateTimeFormatter);
-        String nameWithout = all[0];
+        String nameWithoutId = all[0];
         String formatForPicture = all[1];
-        String nameWithId = all[0] + "_" + parse + "_" + user.getId() + "." + all[1];
+        String nameWithId = nameWithoutId + "_" + parse + "_" + user.getId() + "." + formatForPicture;
         System.out.println(name);
         return path + nameWithId;
     }
 
-    //TODO: make sure to clean up post repositories in likes and post controller, make them in DAOs
-    //TODO: make sure you dont tag people on posts that aren't yours
     @SneakyThrows
     @GetMapping("/posts/{pId}/users/{uId}")
     public String tagSomeone(@PathVariable("pId") Long pId, @PathVariable("uId") Long uId, HttpSession session){
@@ -165,7 +167,11 @@ public class PostController {
         if (u == null){
             throw new AuthorizationException();
         }
+        //Check if user is trying to tag someone on his post
         Post post = postDAO.getPostById(pId);
+        if (post.getUser().getId()!=u.getId()){
+            throw new AuthorizationException("You cannot tag people on someone else's post");
+        }
         User taggedUser = userDAO.getUserById(uId);
         post.addTaggedUser(taggedUser);
         postDAO.save(post);
