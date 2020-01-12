@@ -190,8 +190,7 @@ public class PostController {
     @SneakyThrows
     @GetMapping("/posts/{user_name}")
     public ArrayList<ViewPostDTO> getPostByUsername(@PathVariable("user_name") String username){
-        ArrayList<ViewPostDTO> all = new ArrayList<>();
-        all = postDAO.getPostsByUsername(username);
+        ArrayList<ViewPostDTO> all = postDAO.getPostsByUsername(username);
         return all;
     }
 }
