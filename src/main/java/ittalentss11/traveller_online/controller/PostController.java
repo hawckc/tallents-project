@@ -188,7 +188,7 @@ public class PostController {
         return "You just tagged someone!";
     }
     @SneakyThrows
-    @GetMapping("/posts/{user_name}")
+    @GetMapping("/postsByUname/{user_name}")
     public ArrayList<ViewPostDTO> getPostByUsername(@PathVariable("user_name") String username){
         ArrayList<ViewPostDTO> all = postDAO.getPostsByUsername(username);
         return all;
