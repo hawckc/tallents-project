@@ -94,13 +94,14 @@ public class UserController {
     }
     @GetMapping("/users/newsFeed/")
     @SneakyThrows
-    public HashMap<String, ArrayList<PostDTO>> getTags(HttpSession session){
+    public HashMap<String, ArrayList<ViewPostDTO>> getTags(HttpSession session){
         User user = (User) session.getAttribute(USER_LOGGED);
         if (user == null){
             throw new AuthorizationException();
         }
         //check if user follows other users
         //check if other users are tagged
+        System.out.println(userDao.getNewsFeed(user));
         return userDao.getNewsFeed(user);
 
     }
