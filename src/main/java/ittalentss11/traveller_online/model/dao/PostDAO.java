@@ -26,7 +26,7 @@ public class PostDAO {
             "(user_id, video_url, description , other_info, category_id, coordinates, map_url, location_name) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
     public static final String UPDATE_POST_FOR_VIDEOS = "UPDATE final_project.posts SET video_url = ? WHERE id = ?;";
-    public static final String GET_POSTS_BY_USERNAME = "SELECT p.* FROM final_project.posts JOIN users AS un ON p.user_id = un.id WHERE un.username LIKE CONCAT('%', ? ,'%');";
+    public static final String GET_POSTS_BY_USERNAME = "SELECT p.* FROM final_project.posts AS p JOIN users AS un ON p.user_id = un.id WHERE un.username LIKE CONCAT('%', ? ,'%');";
     //User post a post
     public void addPost(Post post) throws SQLException {
         Connection connection = jdbcTemplate.getDataSource().getConnection();
