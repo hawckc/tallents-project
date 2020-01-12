@@ -12,16 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 //TODO : DO WE NEED TO ADD MODIFICATIONS? (change pass, names?, delete post, edit post)
-
 @RestController
 public class UserController {
+
     public static final String USER_LOGGED = "logged";
     @Autowired
     private UserDAO userDao;
     private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
-
     //USER REGISTRATION
     @SneakyThrows
     @PostMapping(value = "/users")
@@ -99,5 +97,9 @@ public class UserController {
             throw new AuthorizationException();
         }
         return userDao.getNewsFeed(user);
+    }
+    @GetMapping("/users/logout")
+    public void logOut(HttpSession session){
+        session.invalidate();
     }
 }
