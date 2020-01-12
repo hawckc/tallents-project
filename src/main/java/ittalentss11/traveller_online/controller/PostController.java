@@ -168,7 +168,6 @@ public class PostController {
         System.out.println(name);
         return path + nameWithId;
     }
-
     @SneakyThrows
     @GetMapping("/posts/{pId}/users/{uId}")
     public String tagSomeone(@PathVariable("pId") Long pId, @PathVariable("uId") Long uId, HttpSession session){
@@ -193,4 +192,11 @@ public class PostController {
         ArrayList<ViewPostDTO> all = postDAO.getPostsByUsername(username);
         return all;
     }
+    @SneakyThrows
+    @GetMapping("/postsByTag/{user_id}")
+    public ArrayList<ViewPostDTO> getPostByTag(@PathVariable("user_id") int id){
+        ArrayList<ViewPostDTO> all = postDAO.getPostsByTag(id);
+        return all;
+    }
+
 }
