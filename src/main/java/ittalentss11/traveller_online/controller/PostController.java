@@ -15,6 +15,8 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
+
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -195,5 +197,15 @@ public class PostController {
     @GetMapping("/postsByTag/{user_id}")
     public ArrayList<ViewPostDTO> getPostByTag(@PathVariable("user_id") int id){
         return postDAO.getPostsByTag(id);
+    }
+    @SneakyThrows
+    @RequestMapping("/posts/{id}")
+    public RedirectView localRedirect(@PathVariable("id") Long id) {
+        RedirectView redirectView = new RedirectView();
+        Post post = postDAO.getPostById(id);
+        //TODO : Validation of external link?
+        String link = post.getMapUrl();
+        redirectView.setUrl(link);
+        return redirectView;
     }
 }
