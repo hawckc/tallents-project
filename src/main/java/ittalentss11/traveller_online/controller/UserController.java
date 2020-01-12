@@ -3,13 +3,15 @@ import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import ittalentss11.traveller_online.controller.controller_exceptions.*;
 import ittalentss11.traveller_online.model.dao.UserDAO;
+
 import ittalentss11.traveller_online.model.dto.*;
 import ittalentss11.traveller_online.model.pojo.*;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 //TODO : DO WE NEED TO ADD MODIFICATIONS? (change pass, names?, delete post, edit post)
 
@@ -85,8 +87,21 @@ public class UserController {
         //Getting and verifying user ID
         User followUser = userDao.getUserById(id);
         followUser.addFollower(u);
+        //can you follow user more than once
         userDao.save(followUser);
         return new UserNoSensitiveDTO
                 (followUser.getFirstName(), followUser.getLastName(), followUser.getUsername(), followUser.getEmail());
+    }
+    @GetMapping("/users/newsFeed/")
+    @SneakyThrows
+    public HashMap<String, ArrayList<PostDTO>> getTags(HttpSession session){
+        User user = (User) session.getAttribute(USER_LOGGED);
+        if (user == null){
+            throw new AuthorizationException();
+        }
+        //check if user follows other users
+        //check if other users are tagged
+        return userDao.getNewsFeed(user);
+
     }
 }
