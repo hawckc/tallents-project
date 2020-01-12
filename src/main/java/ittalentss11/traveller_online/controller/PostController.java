@@ -161,7 +161,6 @@ public class PostController {
         System.out.println(name);
         return path + nameWithId;
     }
-
     @SneakyThrows
     @GetMapping("/posts/{pId}/users/{uId}")
     public String tagSomeone(@PathVariable("pId") Long pId, @PathVariable("uId") Long uId, HttpSession session){
@@ -180,10 +179,21 @@ public class PostController {
         postDAO.save(post);
         return "You just tagged someone!";
     }
+
     //Doesnt need to be logged in
     @SneakyThrows
     @GetMapping("/posts/byDate/{dateTime}")
     public ArrayList<ViewPostsAndLikesDTO> sortByDateAndLikes(@PathVariable("dateTime") String date){
         return postDAO.getPostsSortedByDateAndLikes(date);
+    }
+    @SneakyThrows
+    @GetMapping("/postsByUname/{user_name}")
+    public ArrayList<ViewPostDTO> getPostByUsername(@PathVariable("user_name") String username){
+        return postDAO.getPostsByUsername(username);
+    }
+    @SneakyThrows
+    @GetMapping("/postsByTag/{user_id}")
+    public ArrayList<ViewPostDTO> getPostByTag(@PathVariable("user_id") int id){
+        return postDAO.getPostsByTag(id);
     }
 }

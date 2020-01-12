@@ -13,6 +13,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,9 +28,11 @@ public class PostDAO {
             "INSERT INTO final_project.posts " +
                     "(user_id, video_url, description , other_info, category_id, coordinates, map_url, location_name, date_time) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-
     public static final String UPDATE_POST_FOR_VIDEOS = "UPDATE final_project.posts SET video_url = ? WHERE id = ?;";
     public static final String GET_POSTS_BY_DATE_AND_LIKES = "SELECT COUNT(l.post_id) AS likes, p.* FROM posts AS p LEFT JOIN likes AS l ON p.id = l.post_id GROUP BY p.id HAVING DATE (p.date_time) = ? ORDER BY likes DESC";
+    public static final String GET_POSTS_BY_USERNAME = "SELECT p.* FROM final_project.posts AS p JOIN users AS un ON p.user_id = un.id WHERE un.username LIKE CONCAT('%', ? ,'%');";
+    private static final String GET_POSTS_BY_TAG = "SELECT p.* FROM final_project.tags AS t" +
+            " JOIN final_project.posts AS p ON t.post_id = p.id WHERE t.user_id = ? ORDER BY p.id;";
 
     //User post a post
     public void addPost(Post post) throws SQLException {
@@ -60,7 +63,6 @@ public class PostDAO {
         }
     }
 
-
     public Post getPostById(long id) throws BadRequestException {
         Optional<Post> optionalPost = postRepository.findById(id);
         if (optionalPost.isPresent()) {
@@ -81,7 +83,7 @@ public class PostDAO {
             preparedStatement.setDate(1, java.sql.Date.valueOf(date));
             ResultSet set = preparedStatement.executeQuery();
             ArrayList<ViewPostsAndLikesDTO> postsByDateAndLikes = new ArrayList<>();
-            while (set.next()){
+            while (set.next()) {
                 ViewPostsAndLikesDTO postDTO = new ViewPostsAndLikesDTO();
                 postDTO.setLikes(set.getInt("likes"));
                 postDTO.setUserId(set.getInt("user_id"));
@@ -96,6 +98,47 @@ public class PostDAO {
                 postsByDateAndLikes.add(postDTO);
             }
             return postsByDateAndLikes;
+        }
+    }
+    public ArrayList<ViewPostDTO> getPostsByUsername(String username) throws SQLException {
+        Connection connection = jdbcTemplate.getDataSource().getConnection();
+        try (PreparedStatement ps = connection.prepareStatement(GET_POSTS_BY_USERNAME, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, username);
+            ResultSet set = ps.executeQuery();
+            ArrayList<ViewPostDTO> arr = new ArrayList<>();
+            while (set.next()) {
+                ViewPostDTO postDTO = new ViewPostDTO();
+                postDTO.setMapUrl(set.getString("map_url"));
+                postDTO.setCoordinates(set.getString("coordinates"));
+                postDTO.setLocationName(set.getString("location_name"));
+                postDTO.setUserId(set.getInt("user_id"));
+                postDTO.setCategoryId(set.getInt("category_id"));
+                postDTO.setVideoUrl(set.getString("video_url"));
+                postDTO.setOtherInfo(set.getString("other_info"));
+                arr.add(postDTO);
+            }
+            return arr;
+        }
+    }
+
+    public ArrayList<ViewPostDTO> getPostsByTag(int UserTag) throws SQLException {
+        Connection connection = jdbcTemplate.getDataSource().getConnection();
+        try(PreparedStatement ps = connection.prepareStatement(GET_POSTS_BY_TAG, Statement.RETURN_GENERATED_KEYS)){
+            ps.setInt(1, UserTag);
+            ResultSet set = ps.executeQuery();
+            ArrayList<ViewPostDTO> arr = new ArrayList<>();
+            while(set.next()){
+                ViewPostDTO postDTO = new ViewPostDTO();
+                postDTO.setMapUrl(set.getString("map_url"));
+                postDTO.setCoordinates(set.getString("coordinates"));
+                postDTO.setLocationName(set.getString("location_name"));
+                postDTO.setUserId(set.getInt("user_id"));
+                postDTO.setCategoryId(set.getInt("category_id"));
+                postDTO.setVideoUrl(set.getString("video_url"));
+                postDTO.setOtherInfo(set.getString("other_info"));
+                arr.add(postDTO);
+            }
+            return arr;
         }
     }
 }
