@@ -27,6 +27,8 @@ public class PostDAO {
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
     public static final String UPDATE_POST_FOR_VIDEOS = "UPDATE final_project.posts SET video_url = ? WHERE id = ?;";
     public static final String GET_POSTS_BY_USERNAME = "SELECT p.* FROM final_project.posts AS p JOIN users AS un ON p.user_id = un.id WHERE un.username LIKE CONCAT('%', ? ,'%');";
+    private static final String GET_POSTS_BY_TAG = "SELECT p.* FROM final_project.tags AS t" +
+            " JOIN final_project.posts AS p ON t.post_id = p.id WHERE t.user_id = ? ORDER BY p.id;";
     //User post a post
     public void addPost(Post post) throws SQLException {
         Connection connection = jdbcTemplate.getDataSource().getConnection();
@@ -71,6 +73,27 @@ public class PostDAO {
         Connection connection = jdbcTemplate.getDataSource().getConnection();
         try(PreparedStatement ps = connection.prepareStatement(GET_POSTS_BY_USERNAME, Statement.RETURN_GENERATED_KEYS)){
             ps.setString(1, username);
+            ResultSet set = ps.executeQuery();
+            ArrayList<ViewPostDTO> arr = new ArrayList<>();
+            while(set.next()){
+                ViewPostDTO postDTO = new ViewPostDTO();
+                postDTO.setMapUrl(set.getString("map_url"));
+                postDTO.setCoordinates(set.getString("coordinates"));
+                postDTO.setLocationName(set.getString("location_name"));
+                postDTO.setUserId(set.getInt("user_id"));
+                postDTO.setCategoryId(set.getInt("category_id"));
+                postDTO.setVideoUrl(set.getString("video_url"));
+                postDTO.setOtherInfo(set.getString("other_info"));
+                arr.add(postDTO);
+            }
+            return arr;
+
+        }
+    }
+    public ArrayList<ViewPostDTO> getPostsByTag(int UserTag) throws SQLException {
+        Connection connection = jdbcTemplate.getDataSource().getConnection();
+        try(PreparedStatement ps = connection.prepareStatement(GET_POSTS_BY_TAG, Statement.RETURN_GENERATED_KEYS)){
+            ps.setInt(1, UserTag);
             ResultSet set = ps.executeQuery();
             ArrayList<ViewPostDTO> arr = new ArrayList<>();
             while(set.next()){
