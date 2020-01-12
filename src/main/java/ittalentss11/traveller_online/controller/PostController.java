@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 @RestController
 public class PostController {
@@ -185,5 +186,12 @@ public class PostController {
         post.addTaggedUser(taggedUser);
         postDAO.save(post);
         return "You just tagged someone!";
+    }
+    @SneakyThrows
+    @GetMapping("/posts/{user_name}")
+    public ArrayList<ViewPostDTO> getPostByUsername(@PathVariable("user_name") String username){
+        ArrayList<ViewPostDTO> all = new ArrayList<>();
+        all = postDAO.getPostsByUsername(username);
+        return all;
     }
 }
