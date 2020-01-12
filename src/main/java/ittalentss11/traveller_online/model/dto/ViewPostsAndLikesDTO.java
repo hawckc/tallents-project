@@ -1,5 +1,4 @@
 package ittalentss11.traveller_online.model.dto;
-
 import ittalentss11.traveller_online.model.pojo.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ViewPostDTO {
+public class ViewPostsAndLikesDTO {
     private long userId;
     private long categoryId;
     private String coordinates;
@@ -20,8 +19,9 @@ public class ViewPostDTO {
     private String videoUrl;
     private String otherInfo;
     private LocalDateTime dateTime;
+    private int likes;
 
-    public ViewPostDTO(Post post) {
+    public ViewPostsAndLikesDTO(Post post) {
         this.userId = post.getUser().getId();
         this.categoryId = post.getCategory().getId();
         this.coordinates = post.getCoordinates();

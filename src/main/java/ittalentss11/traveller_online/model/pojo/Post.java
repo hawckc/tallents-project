@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @AllArgsConstructor
@@ -37,6 +38,8 @@ public class Post {
     private String mapUrl;
     @Column
     private String locationName;
+    @Column
+    private LocalDateTime dateTime;
 
     //for likes
     @ManyToMany(cascade = {

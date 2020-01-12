@@ -130,12 +130,12 @@ public class UserDAO {
                 postDTO.setCoordinates(set.getString("coordinates"));
                 postDTO.setVideoUrl(set.getString("video_url"));
                 postDTO.setLocationName(set.getString("location_name"));
+                postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
                 ArrayList<ViewPostDTO> arr = usersWithPosts.get(username);
                 arr.add(postDTO);
                 usersWithPosts.put(username, arr);
             }
             return usersWithPosts;
-
         }
     }
 }

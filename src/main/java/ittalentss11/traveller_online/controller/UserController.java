@@ -87,7 +87,6 @@ public class UserController {
         //Getting and verifying user ID
         User followUser = userDao.getUserById(id);
         followUser.addFollower(u);
-        //can you follow user more than once
         userDao.save(followUser);
         return new UserNoSensitiveDTO
                 (followUser.getFirstName(), followUser.getLastName(), followUser.getUsername(), followUser.getEmail());
@@ -99,10 +98,6 @@ public class UserController {
         if (user == null){
             throw new AuthorizationException();
         }
-        //check if user follows other users
-        //check if other users are tagged
-        System.out.println(userDao.getNewsFeed(user));
         return userDao.getNewsFeed(user);
-
     }
 }

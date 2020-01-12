@@ -6,14 +6,12 @@ import ittalentss11.traveller_online.model.dao.UserDAO;
 import ittalentss11.traveller_online.model.dao.PostPictureDao;
 import ittalentss11.traveller_online.model.dto.PostDTO;
 import ittalentss11.traveller_online.model.dto.ViewPostDTO;
+import ittalentss11.traveller_online.model.dto.ViewPostsAndLikesDTO;
 import ittalentss11.traveller_online.model.pojo.Category;
 import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.pojo.PostPicture;
 import ittalentss11.traveller_online.model.pojo.User;
-import ittalentss11.traveller_online.model.repository_ORM.PostRepository;
 import lombok.SneakyThrows;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 @RestController
 public class PostController {
@@ -38,6 +37,7 @@ public class PostController {
     //Posting a post:
     @SneakyThrows
     @PostMapping("/posts")
+    //TODO: ADD DATE
     public String addPost(@RequestBody PostDTO postDTO, HttpSession session) {
         //Is the user logged in?
         User u = (User) session.getAttribute(UserController.USER_LOGGED);
@@ -63,6 +63,7 @@ public class PostController {
         post.setCoordinates(postDTO.getCoordinates());
         post.setMapUrl(postDTO.getMapUrl());
         post.setLocationName(postDTO.getLocationName());
+        post.setDateTime(LocalDateTime.now());
         postDAO.addPost(post);
         return "Your post was successfully added!";
     }
@@ -71,8 +72,7 @@ public class PostController {
     @GetMapping("/posts/{id}")
     public ViewPostDTO viewPost (@PathVariable("id") long id){
         Post post = postDAO.getPostById(id);
-        ViewPostDTO viewPostDTO = new ViewPostDTO(post);
-        return viewPostDTO;
+        return new ViewPostDTO(post);
     }
     //Changed postmapping url from /posts/{id}/upload to /posts/{id}/pictures
     @SneakyThrows
@@ -115,12 +115,6 @@ public class PostController {
         postPictureDao.addPostPicture(post, pictureName);
         postPicture.setPost(post);
         postPicture.setPictureUrl(pictureName);
-        //check if there are no more than 3 pictures
-        //check if the file is a picture
-        // create a folder with the same name d:/tallents/png
-        //name the file picture_url_id.png
-        //move to folder
-        //write in posts_pictures post_id and picture url
         return picture.getName();
     }
     @SneakyThrows
@@ -185,5 +179,11 @@ public class PostController {
         post.addTaggedUser(taggedUser);
         postDAO.save(post);
         return "You just tagged someone!";
+    }
+    //Doesnt need to be logged in
+    @SneakyThrows
+    @GetMapping("/posts/byDate/{dateTime}")
+    public ArrayList<ViewPostsAndLikesDTO> sortByDateAndLikes(@PathVariable("dateTime") String date){
+        return postDAO.getPostsSortedByDateAndLikes(date);
     }
 }
