@@ -5,6 +5,7 @@ import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dao.UserDAO;
 import ittalentss11.traveller_online.model.dao.PostPictureDao;
 import ittalentss11.traveller_online.model.dto.PostDTO;
+import ittalentss11.traveller_online.model.dto.ViewPostDTO;
 import ittalentss11.traveller_online.model.pojo.Category;
 import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.pojo.PostPicture;
@@ -64,6 +65,14 @@ public class PostController {
         post.setLocationName(postDTO.getLocationName());
         postDAO.addPost(post);
         return "Your post was successfully added!";
+    }
+    //View post (don't need to be logged in I think?)
+    @SneakyThrows
+    @GetMapping("/posts/{id}")
+    public ViewPostDTO viewPost (@PathVariable("id") long id){
+        Post post = postDAO.getPostById(id);
+        ViewPostDTO viewPostDTO = new ViewPostDTO(post);
+        return viewPostDTO;
     }
     //Changed postmapping url from /posts/{id}/upload to /posts/{id}/pictures
     @SneakyThrows

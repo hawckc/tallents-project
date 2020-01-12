@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
-//TODO : WE NEED TO ADD MODIFICATIONS (change pass, names?, delete post, edit post)
+//TODO : DO WE NEED TO ADD MODIFICATIONS? (change pass, names?, delete post, edit post)
 
 @RestController
 public class UserController {
