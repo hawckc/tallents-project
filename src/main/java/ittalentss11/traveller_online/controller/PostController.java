@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.activation.MimetypesFileTypeMap;
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -104,15 +106,17 @@ public class PostController {
             throw new BadRequestException();
         }
         String path = "C://posts//png//";
-        String pictureName = PostController.getNameForUpload(multipartFile.getOriginalFilename(), path, user);
-        if (pictureName.split("\\.")[1].equals("png") == false){
-            throw new BadRequestException();
-        }
-        File picture = new File(pictureName);
+        String pictureName = PostController.getNameForUpload(multipartFile.getOriginalFilename(), user, post);
+        File picture = new File(path + pictureName);
         FileOutputStream fos = new FileOutputStream(picture);
         //TODO writing of the file should be done in another thread
         fos.write(multipartFile.getBytes());
         fos.close();
+        String mimeType = new MimetypesFileTypeMap().getContentType(picture);
+        if(mimeType.substring(0,5).equalsIgnoreCase("image") == false){
+            picture.delete();
+            throw new BadRequestException("You cannot upload something that is not a picture");
+        }
         PostPicture postPicture = new PostPicture();
         postPictureDao.addPostPicture(post, pictureName);
         postPicture.setPost(post);
@@ -140,28 +144,39 @@ public class PostController {
             throw new BadRequestException();
         }
         String path = "C://posts//videos//";
-        String videosName = PostController.getNameForUpload(multipartFile.getOriginalFilename(), path, user);
+        String videosName = PostController.getNameForUpload(multipartFile.getOriginalFilename(), user, post);
         //System.out.println(namesWhole);
-        if (videosName.split("\\.")[1].equals("avi") == false){
+        /*if (videosName.split("\\.")[1].equals("avi") == false){
             throw new BadRequestException();
+        }*/
+        if (post.getVideoUrl().isEmpty() == false){
+            //if a user has a video on post, we delete the old one from path folder
+            File file = new File(path + post.getVideoUrl());
+            file.delete();
         }
-        File videos = new File(videosName);
+        File videos = new File(path + videosName);
         FileOutputStream fos = new FileOutputStream(videos);
         fos.write(multipartFile.getBytes());
         fos.close();
+        String mimeType = new MimetypesFileTypeMap().getContentType(videos);
+        if(mimeType.substring(0,5).equalsIgnoreCase("videos") == false){
+            videos.delete();
+            throw new BadRequestException("You cannot upload something that is not a videos");
+        }
         postDAO.addVideos(post, videosName);
         return videos.getName();
     }
-    public static String getNameForUpload(String name, String path, User user){
+    public static String getNameForUpload(String name, User user, Post post){
+        //name should have one . in it
         String[] all = name.split("\\.", 2);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yy-MM-dd-hh-mm-ss");
         LocalDateTime localDateTime = LocalDateTime.now();
         String parse = localDateTime.format(dateTimeFormatter);
         String nameWithoutId = all[0];
         String formatForPicture = all[1];
-        String nameWithId = nameWithoutId + "_" + parse + "_" + user.getId() + "." + formatForPicture;
+        String nameWithId = nameWithoutId + "_" + parse + "_" + user.getId() + "_" + post.getId() +  "." + formatForPicture;
         System.out.println(name);
-        return path + nameWithId;
+        return nameWithId;
     }
     @SneakyThrows
     @GetMapping("/posts/{pId}/users/{uId}")
