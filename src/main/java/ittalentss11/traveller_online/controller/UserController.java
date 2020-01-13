@@ -37,6 +37,12 @@ public class UserController {
         if (!user.getPassword().equals(user.getConfPassword())){
             throw new NoPassMatchException("Wrong password setup, please make sure to confirm your password.");
         }
+        if (!user.getPassword().equals(user.getConfPassword())){
+            throw new NoPassMatchException("Wrong password setup, please make sure to confirm your password.");
+        }
+        if (user.checkPasswordPatterns(user.getPassword()) == false){
+            throw new RegisterCheckException("Please enter a password containg atleast 6 letters or numbers");
+        }
         //Verify email validity
         if (!user.checkEmail(user.getEmail())){
             throw new RegisterCheckException("You have entered an invalid email.");
