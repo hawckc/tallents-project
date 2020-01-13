@@ -115,6 +115,7 @@ public class PostDAO {
                 postDTO.setCategoryId(set.getInt("category_id"));
                 postDTO.setVideoUrl(set.getString("video_url"));
                 postDTO.setOtherInfo(set.getString("other_info"));
+                postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
                 arr.add(postDTO);
             }
             return arr;
@@ -136,6 +137,7 @@ public class PostDAO {
                 postDTO.setCategoryId(set.getInt("category_id"));
                 postDTO.setVideoUrl(set.getString("video_url"));
                 postDTO.setOtherInfo(set.getString("other_info"));
+                postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
                 arr.add(postDTO);
             }
             return arr;
