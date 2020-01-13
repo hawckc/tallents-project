@@ -69,4 +69,14 @@ public class UserRegDTO {
             return pattern.matcher(firstName).matches() && pattern.matcher(lastName).matches();
         }
     }
+    public boolean checkPasswordPatterns(String password){
+        String correct = "^[a-zA-Z][a-zA-Z0-9]{5,}$";
+        Pattern pattern = Pattern.compile(correct);
+        if (password == null){
+            return false;
+        }
+        else {
+            return pattern.matcher(username).matches() && pattern.matcher(password).matches();
+        }
+    }
 }
