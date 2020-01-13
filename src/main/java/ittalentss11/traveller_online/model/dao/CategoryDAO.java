@@ -23,8 +23,9 @@ public class CategoryDAO {
 
     //what is that for?
     public Category getByName(String name) throws SQLException {
-        Connection connection = jdbcTemplate.getDataSource().getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_NAME, Statement.RETURN_GENERATED_KEYS)) {
+
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_BY_NAME)) {
             preparedStatement.setString(1,  name);
             ResultSet set = preparedStatement.executeQuery();
             if (set.next()){

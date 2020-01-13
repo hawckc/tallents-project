@@ -14,14 +14,15 @@ public class PostPictureDao {
             " VALUES (?, ?);";
 
     public void addPostPicture(Post post, String name) throws SQLException {
-        Connection connection = jdbcTemplate.getDataSource().getConnection();
+
         //String[] picturewithall = postPicture.getPictureUrl().split(".");
         //String picture = picturewithall[0];
         //picture += "_";
         //picture += postPicture.getPost().getUser().getId();
         PostPicture postPicture = new PostPicture();
         postPicture.setPost(post);
-        try(PreparedStatement ps = connection.prepareStatement(INSERT_PICTURE, Statement.RETURN_GENERATED_KEYS)) {
+        try(Connection connection = jdbcTemplate.getDataSource().getConnection();
+            PreparedStatement ps = connection.prepareStatement(INSERT_PICTURE, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, (int) post.getId());
             ps.setString(2, name);
             ps.executeUpdate();
@@ -31,7 +32,9 @@ public class PostPictureDao {
         }
     }
     public int getAllPictures(int id){
-        int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.post_pictures WHERE posts_id = ?;", new Object[]{id}, Integer.class);
+        int result = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM final_project.post_pictures " +
+                        "WHERE posts_id = ?;", new Object[]{id}, Integer.class);
         return result;
     }
 }

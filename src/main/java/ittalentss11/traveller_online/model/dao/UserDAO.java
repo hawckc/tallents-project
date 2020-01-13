@@ -3,13 +3,11 @@ package ittalentss11.traveller_online.model.dao;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import ittalentss11.traveller_online.controller.controller_exceptions.BadRequestException;
-import ittalentss11.traveller_online.model.dto.PostDTO;
 import ittalentss11.traveller_online.model.dto.ViewPostDTO;
 import ittalentss11.traveller_online.model.pojo.User;
 import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -75,12 +73,14 @@ public class UserDAO {
     }
 
     public boolean foundUsernameForLogin(String username){
-        int result = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM final_project.users WHERE username = ?;", new Object[]{username}, Integer.class);
+        int result = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM final_project.users " +
+                "WHERE username = ?;", new Object[]{username}, Integer.class);
         return result == 1;
     }
     public User getUserByUsername(String username) throws SQLException {
-        Connection connection = jdbcTemplate.getDataSource().getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(USER_BY_USERNAME, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(USER_BY_USERNAME)) {
             preparedStatement.setString(1, username);
             ResultSet set = preparedStatement.executeQuery();
             if (set.next()){
@@ -93,7 +93,6 @@ public class UserDAO {
                 return u;
             }
             return null;
-
         }
     }
     public User getUserById(Long uId) throws BadRequestException {
@@ -109,8 +108,8 @@ public class UserDAO {
     }
 
     public HashMap<String, ArrayList<ViewPostDTO>> getNewsFeed(User user) throws SQLException {
-        Connection connection = jdbcTemplate.getDataSource().getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(USER_NEWS_FEED, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(USER_NEWS_FEED)) {
             preparedStatement.setInt(1, (int) user.getId());
             preparedStatement.setInt(2, (int) user.getId());
             ResultSet set = preparedStatement.executeQuery();

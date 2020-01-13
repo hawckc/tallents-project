@@ -1,7 +1,6 @@
 package ittalentss11.traveller_online.model.dao;
 import ittalentss11.traveller_online.controller.controller_exceptions.BadRequestException;
 import ittalentss11.traveller_online.model.pojo.Comment;
-import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.repository_ORM.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

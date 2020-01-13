@@ -10,11 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -36,8 +32,8 @@ public class PostDAO {
 
     //User post a post
     public void addPost(Post post) throws SQLException {
-        Connection connection = jdbcTemplate.getDataSource().getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(INSERT_POST, Statement.RETURN_GENERATED_KEYS)) {
+        try ( Connection connection = jdbcTemplate.getDataSource().getConnection();
+              PreparedStatement ps = connection.prepareStatement(INSERT_POST, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, (int) post.getUser().getId());
             ps.setString(2, post.getVideoUrl());
             ps.setString(3, post.getDescription());
@@ -55,8 +51,8 @@ public class PostDAO {
     }
 
     public void addVideos(Post post, String name) throws SQLException {
-        Connection connection = jdbcTemplate.getDataSource().getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(UPDATE_POST_FOR_VIDEOS, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+             PreparedStatement ps = connection.prepareStatement(UPDATE_POST_FOR_VIDEOS)) {
             ps.setString(1, name);
             ps.setInt(2, (int) post.getId());
             ps.executeUpdate();
@@ -77,9 +73,8 @@ public class PostDAO {
 
     public ArrayList<ViewPostsAndLikesDTO> getPostsSortedByDateAndLikes(String date) throws SQLException {
         //get all posts by given date and ordered by likes
-        Connection connection = jdbcTemplate.getDataSource().getConnection();
-        try (PreparedStatement preparedStatement =
-                     connection.prepareStatement(GET_POSTS_BY_DATE_AND_LIKES)) {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(GET_POSTS_BY_DATE_AND_LIKES)) {
             preparedStatement.setDate(1, java.sql.Date.valueOf(date));
             ResultSet set = preparedStatement.executeQuery();
             ArrayList<ViewPostsAndLikesDTO> postsByDateAndLikes = new ArrayList<>();
@@ -101,8 +96,8 @@ public class PostDAO {
         }
     }
     public ArrayList<ViewPostDTO> getPostsByUsername(String username) throws SQLException {
-        Connection connection = jdbcTemplate.getDataSource().getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(GET_POSTS_BY_USERNAME, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+             PreparedStatement ps = connection.prepareStatement(GET_POSTS_BY_USERNAME)) {
             ps.setString(1, username);
             ResultSet set = ps.executeQuery();
             ArrayList<ViewPostDTO> arr = new ArrayList<>();
@@ -115,7 +110,7 @@ public class PostDAO {
                 postDTO.setCategoryId(set.getInt("category_id"));
                 postDTO.setVideoUrl(set.getString("video_url"));
                 postDTO.setOtherInfo(set.getString("other_info"));
-                postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
+                //postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
                 arr.add(postDTO);
             }
             return arr;
@@ -123,8 +118,8 @@ public class PostDAO {
     }
 
     public ArrayList<ViewPostDTO> getPostsByTag(int UserTag) throws SQLException {
-        Connection connection = jdbcTemplate.getDataSource().getConnection();
-        try(PreparedStatement ps = connection.prepareStatement(GET_POSTS_BY_TAG, Statement.RETURN_GENERATED_KEYS)){
+        try(Connection connection = jdbcTemplate.getDataSource().getConnection();
+            PreparedStatement ps = connection.prepareStatement(GET_POSTS_BY_TAG)){
             ps.setInt(1, UserTag);
             ResultSet set = ps.executeQuery();
             ArrayList<ViewPostDTO> arr = new ArrayList<>();
@@ -137,7 +132,7 @@ public class PostDAO {
                 postDTO.setCategoryId(set.getInt("category_id"));
                 postDTO.setVideoUrl(set.getString("video_url"));
                 postDTO.setOtherInfo(set.getString("other_info"));
-                postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
+                //postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
                 arr.add(postDTO);
             }
             return arr;
