@@ -198,9 +198,10 @@ public class PostController {
     public ArrayList<ViewPostDTO> getPostByTag(@PathVariable("user_id") int id){
         return postDAO.getPostsByTag(id);
     }
+
     @SneakyThrows
     @RequestMapping("/posts/{id}")
-    public RedirectView localRedirect(@PathVariable("id") Long id) {
+    public RedirectView viewMap(@PathVariable("id") Long id) {
         RedirectView redirectView = new RedirectView();
         Post post = postDAO.getPostById(id);
         //TODO : Validation of external link?
