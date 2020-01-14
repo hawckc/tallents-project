@@ -25,7 +25,7 @@ public class PostDAO {
                     "(user_id, video_url, description , other_info, category_id, coordinates, map_url, location_name, date_time) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
     public static final String UPDATE_POST_FOR_VIDEOS = "UPDATE final_project.posts SET video_url = ? WHERE id = ?;";
-    public static final String GET_POSTS_BY_DATE_AND_LIKES = "SELECT COUNT(l.post_id) AS likes, p.* FROM posts AS p LEFT JOIN likes AS l ON p.id = l.post_id GROUP BY p.id HAVING DATE (p.date_time) = ? ORDER BY likes DESC";
+    public static final String GET_POSTS_BY_DATE_AND_LIKES = "SELECT COUNT(l.post_id) AS likes, p.* FROM posts AS p LEFT JOIN likes AS l ON p.id = l.post_id GROUP BY p.id HAVING DATE (p.date_time) = ? ORDER BY likes DESC, date_time DESC";
     public static final String GET_POSTS_BY_USERNAME = "SELECT p.* FROM final_project.posts AS p JOIN users AS un ON p.user_id = un.id WHERE un.username LIKE CONCAT('%', ? ,'%');";
     private static final String GET_POSTS_BY_TAG = "SELECT p.* FROM final_project.tags AS t" +
             " JOIN final_project.posts AS p ON t.post_id = p.id WHERE t.user_id = ? ORDER BY p.id;";
@@ -81,6 +81,7 @@ public class PostDAO {
             while (set.next()) {
                 ViewPostsAndLikesDTO postDTO = new ViewPostsAndLikesDTO();
                 postDTO.setLikes(set.getInt("likes"));
+                postDTO.setId(set.getLong("id"));
                 postDTO.setUserId(set.getInt("user_id"));
                 postDTO.setCategoryId(set.getInt("category_id"));
                 postDTO.setDescription(set.getString("description"));

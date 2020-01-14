@@ -1,5 +1,5 @@
 package ittalentss11.traveller_online.model.dto;
-import ittalentss11.traveller_online.model.pojo.Category;
+import ittalentss11.traveller_online.model.pojo.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
 @Getter
@@ -18,21 +18,27 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 @Component
 public class PostDTO {
-    private String categoryName;
-    @NotNull(message = "Please fill coordinates.")
-    @NotBlank(message = "Your coordinates cannot be empty.")
+    private long id;
+    private long userId;
+    private long categoryId;
     private String coordinates;
-    @NotNull(message = "Please fill mapurl.")
-    @NotBlank(message = "Your mapurl cannot be empty.")
     private String mapUrl;
-    @NotNull(message = "Please fill location.")
-    @NotBlank(message = "Your location cannot be empty.")
     private String locationName;
-    @NotNull(message = "Please fill description.")
-    @NotBlank(message = "Your description cannot be empty.")
     private String description;
-    private String videoUrl;
+    private LocalDateTime dateTime;
     private String otherInfo;
+
+    public PostDTO(Post post) {
+        this.id = post.getId();
+        this.userId = post.getUser().getId();
+        this.categoryId = post.getCategory().getId();
+        this.coordinates = post.getCoordinates();
+        this.mapUrl = post.getMapUrl();
+        this.locationName = post.getLocationName();
+        this.description = post.getDescription();
+        this.otherInfo = post.getOtherInfo();
+        this.dateTime = post.getDateTime();
+    }
 
     public boolean checkCoordinates(String coordinates){
         String correct = "^[0-9]* [0-9]{2,7}$";

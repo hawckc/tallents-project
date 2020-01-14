@@ -4,9 +4,7 @@ import ittalentss11.traveller_online.model.dao.CategoryDAO;
 import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dao.UserDAO;
 import ittalentss11.traveller_online.model.dao.PostPictureDao;
-import ittalentss11.traveller_online.model.dto.PostDTO;
-import ittalentss11.traveller_online.model.dto.ViewPostDTO;
-import ittalentss11.traveller_online.model.dto.ViewPostsAndLikesDTO;
+import ittalentss11.traveller_online.model.dto.*;
 import ittalentss11.traveller_online.model.pojo.Category;
 import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.pojo.PostPicture;
@@ -16,15 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
-
 import javax.activation.MimetypesFileTypeMap;
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 @RestController
 public class PostController {
@@ -38,95 +38,85 @@ public class PostController {
     private PostPictureDao postPictureDao;
     private static final int MAX_PICTURES = 3;
 
-    //Posting a post:
+    //============ ADD A POST ==================//
     @SneakyThrows
     @PostMapping("/posts")
-    //TODO: ADD DATE
-    public String addPost(@RequestBody PostDTO postDTO, HttpSession session) {
+    public PostDTO addPost(@Valid @RequestBody PostDTO postDTO, HttpSession session) {
         //Is the user logged in?
         User u = (User) session.getAttribute(UserController.USER_LOGGED);
         if (u == null) {
             throw new AuthorizationException();
         }
         Post post = new Post();
-        //Adding to post: user, description of pictures, video url if any, info for video, categoryID, coordinates
-        //mapUrl and location name
         post.setUser(u);
+        if (postDTO.getMapUrl() == null || postDTO.getMapUrl().isEmpty()){
+            throw new BadRequestException("Make sure to fill your map URL.");
+        }
+        post.setMapUrl(postDTO.getMapUrl());
+        if (postDTO.getLocationName() == null || postDTO.getLocationName().isEmpty()){
+            throw new BadRequestException("Make sure to fill your location name.");
+        }
+        post.setLocationName(postDTO.getLocationName());
+        if (postDTO.getDescription() == null || postDTO.getDescription().isEmpty()){
+            throw new BadRequestException("Make sure to add a short description of your trip.");
+        }
         post.setDescription(postDTO.getDescription());
-        post.setVideoUrl(postDTO.getVideoUrl());
         post.setOtherInfo(postDTO.getOtherInfo());
         //validate if there is a category with id
-        Category category = categoryDAO.getByName(postDTO.getCategoryName());
-        if (category == null) {
-            throw new MissingCategoryException();
-        }
+        Category category = categoryDAO.getCategoryById(postDTO.getCategoryId());
         post.setCategory(category);
-        if (postDTO.checkCoordinates(postDTO.getCoordinates()) == false) {
+        if (!postDTO.checkCoordinates(postDTO.getCoordinates())) {
                 throw new WrongCoordinatesException();
         }
         post.setCoordinates(postDTO.getCoordinates());
-        post.setMapUrl(postDTO.getMapUrl());
-        post.setLocationName(postDTO.getLocationName());
         post.setDateTime(LocalDateTime.now());
         postDAO.addPost(post);
-        return "Your post was successfully added!";
+        return new PostDTO(post);
     }
-    //View post (don't need to be logged in I think?)
+    //============VIEW POST BY ID ==================//
     @SneakyThrows
     @GetMapping("/posts/{id}")
     public ViewPostDTO viewPost (@PathVariable("id") long id){
         Post post = postDAO.getPostById(id);
-        return new ViewPostDTO(post);
+        return new ViewPostDTO(post, postPictureDao.getPicturesByPostId(post.getId()));
     }
-    //Changed postmapping url from /posts/{id}/upload to /posts/{id}/pictures
+    //============ ADD PICTURE TO POST ==================//
     @SneakyThrows
     @PostMapping("/posts/{id}/pictures")
-    public String addPicture(@RequestPart(value = "picture") MultipartFile multipartFile, @PathVariable("id") long id,
+    public PictureDTO addPicture(@RequestPart(value = "picture") MultipartFile multipartFile, @PathVariable("id") long id,
                              HttpSession session){
-        //first we check if the use is logged
+        //first we check if the user is logged in
         User user = (User) session.getAttribute(UserController.USER_LOGGED);
         if (user == null){
             throw new AuthorizationException();
         }
         // we check if there is a post with id
         Post post = postDAO.getPostById(id);
-        if (post == null){
-            //TODO this is unreachable because getPostById throws the exception already
-            throw new BadRequestException();
-        }
-        if (postPictureDao.getAllPictures((int) post.getId()) >= MAX_PICTURES){
+        if (postPictureDao.getNumberOfPictures(post.getId()) >= MAX_PICTURES){
             throw new PostPicturePerPostException();
         }
-        if (post.getUser().getUsername().equals(user.getUsername()) == false){
-            throw new BadRequestException();
-        }
-        //TODO: this is not reached, if i dont attach anything it says 500 in postman:
-        // "Current request is not a multipart request"
-        if (multipartFile == null){
-            throw new BadRequestException();
+        if (!post.getUser().getUsername().equals(user.getUsername())){
+            throw new BadRequestException("You cannot upload a picture on someone else's post.");
         }
         String path = "C://posts//png//";
         String pictureName = PostController.getNameForUpload(multipartFile.getOriginalFilename(), user, post);
         File picture = new File(path + pictureName);
         FileOutputStream fos = new FileOutputStream(picture);
-        //TODO writing of the file should be done in another thread
         fos.write(multipartFile.getBytes());
         fos.close();
         String mimeType = new MimetypesFileTypeMap().getContentType(picture);
-        if(mimeType.substring(0,5).equalsIgnoreCase("image") == false){
+        if(!mimeType.substring(0, 5).equalsIgnoreCase("image")){
             picture.delete();
-            throw new BadRequestException("You cannot upload something that is not a picture");
+            throw new BadRequestException("File format not supported, please upload pictures only");
         }
-        PostPicture postPicture = new PostPicture();
-        postPictureDao.addPostPicture(post, pictureName);
-        postPicture.setPost(post);
-        postPicture.setPictureUrl(pictureName);
-        return picture.getName();
+        PostPicture postPicture  = postPictureDao.addPostPicture(post, pictureName);
+        return new PictureDTO(postPicture);
     }
+    //============ ADD VIDEO TO POST ==================//
     @SneakyThrows
-    @PutMapping("/posts/{id}/videos")
-    public String addVideos(@RequestPart(value = "videos") MultipartFile multipartFile, @PathVariable("id") long id,
-                             HttpSession session){
+    @PostMapping("/posts/{id}/videos")
+    public ViewPostDTO addVideos(@RequestPart(value = "videos") MultipartFile multipartFile, @PathVariable("id") long id,
+                                 HttpSession session){
         //first we check if the use is logged
         User user = (User) session.getAttribute(UserController.USER_LOGGED);
         if (user == null){
@@ -134,22 +124,12 @@ public class PostController {
         }
         // we check if there is a post with id
         Post post = postDAO.getPostById(id);
-        if (post == null){
-            throw new BadRequestException();
-        }
-        if (post.getUser().getUsername().equals(user.getUsername()) == false){
-            throw new BadRequestException();
-        }
-        if (multipartFile == null){
-            throw new BadRequestException();
+        if (!post.getUser().getUsername().equals(user.getUsername())){
+            throw new BadRequestException("You cannot modify posts that are not yours.");
         }
         String path = "C://posts//videos//";
         String videosName = PostController.getNameForUpload(multipartFile.getOriginalFilename(), user, post);
-        //System.out.println(namesWhole);
-        /*if (videosName.split("\\.")[1].equals("avi") == false){
-            throw new BadRequestException();
-        }*/
-        if (post.getVideoUrl().isEmpty() == false){
+        if (post.getVideoUrl() != null || !post.getVideoUrl().isEmpty()){
             //if a user has a video on post, we delete the old one from path folder
             File file = new File(path + post.getVideoUrl());
             file.delete();
@@ -159,12 +139,13 @@ public class PostController {
         fos.write(multipartFile.getBytes());
         fos.close();
         String mimeType = new MimetypesFileTypeMap().getContentType(videos);
-        if(mimeType.substring(0,5).equalsIgnoreCase("videos") == false){
+        if(!mimeType.substring(0, 6).contains("video")){
             videos.delete();
-            throw new BadRequestException("You cannot upload something that is not a videos");
+            throw new BadRequestException("File format not supported, please upload videos only");
         }
+        post.setVideoUrl(videosName);
         postDAO.addVideos(post, videosName);
-        return videos.getName();
+        return new ViewPostDTO(post);
     }
     public static String getNameForUpload(String name, User user, Post post){
         //name should have one . in it
@@ -178,9 +159,10 @@ public class PostController {
         System.out.println(name);
         return nameWithId;
     }
+    //============ TAG ANOTHER USER ==================//
     @SneakyThrows
     @GetMapping("/posts/{pId}/users/{uId}")
-    public String tagSomeone(@PathVariable("pId") Long pId, @PathVariable("uId") Long uId, HttpSession session){
+    public TagDTO tagSomeone(@PathVariable("pId") Long pId, @PathVariable("uId") Long uId, HttpSession session){
         //Is the user logged in?
         User u = (User) session.getAttribute(UserController.USER_LOGGED);
         if (u == null){
@@ -194,13 +176,18 @@ public class PostController {
         User taggedUser = userDAO.getUserById(uId);
         post.addTaggedUser(taggedUser);
         postDAO.save(post);
-        return "You just tagged someone!";
+        return new TagDTO(uId, pId);
     }
 
     //Doesnt need to be logged in
     @SneakyThrows
     @GetMapping("/posts/byDate/{dateTime}")
     public ArrayList<ViewPostsAndLikesDTO> sortByDateAndLikes(@PathVariable("dateTime") String date){
+        if(date == null){
+            throw new BadRequestException("Please enter a valid date.");
+        }
+        //will throw exception if date is not valid
+        LocalDate.parse(date);
         return postDAO.getPostsSortedByDateAndLikes(date);
     }
     @SneakyThrows

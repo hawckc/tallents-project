@@ -28,14 +28,12 @@ public class CommentController {
         if (u == null){
             throw new AuthorizationException();
         }
+        Post post = postDAO.getPostById(id);
         Comment comment = new Comment();
         comment.setUser(u);
-        //Get post ID
-        Post post = postDAO.getPostById(id);
         comment.setPost(post);
-        //Comment text
         comment.setText(commentDTO.getComment());
-        commentDAO.addComment(comment);
+        commentDTO.setId(commentDAO.addComment(comment));
         return commentDTO;
     }
 }

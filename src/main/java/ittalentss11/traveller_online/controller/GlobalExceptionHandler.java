@@ -1,6 +1,7 @@
 package ittalentss11.traveller_online.controller;
 import ittalentss11.traveller_online.controller.controller_exceptions.*;
 import ittalentss11.traveller_online.model.dto.ExceptionDTO;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -8,8 +9,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.sql.SQLException;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartException;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 //TODO ADD GLOBAL HANDLERS SUCH AS SQL EXCEPTIONS AND OTHERS
 
@@ -121,15 +125,34 @@ public class GlobalExceptionHandler {
     //==========GENERAL EXCEPTIONS=================//
 
     //SQL EXCEPTION
-    //TODO IS THIS OK??? SHOULD I CHANGE THE CAPTION?
     @ExceptionHandler(value = SQLException.class)
     public ResponseEntity<ExceptionDTO> sqlException(Exception e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(
                 "Oops, something went wrong, try again later!",
+                HttpStatus.NOT_FOUND.value(),
+                LocalDateTime.now(),
+                e.getClass().getName());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
+    }
+    //NOT UPLOADING FILE EXCEPTION
+    @ExceptionHandler(value = MultipartException.class)
+    public ResponseEntity<ExceptionDTO> multipartException(Exception e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(
+                "Please make sure to attach a file.",
                 HttpStatus.I_AM_A_TEAPOT.value(),
                 LocalDateTime.now(),
                 e.getClass().getName());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.I_AM_A_TEAPOT);
     }
+    @ExceptionHandler(value = DateTimeParseException.class)
+    public ResponseEntity<ExceptionDTO> dateTimeParseException(Exception e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(
+                "Please make sure to respect the YYYY-MM-DD format or enter a valid date.",
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                e.getClass().getName());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
+    }
+    //TODO : ADD EXCEPTION HANDLER FOR EVERYTHING ELSE
 }
 

@@ -43,6 +43,13 @@ public class Comment {
         usersThatLikedComment.add(user);
         user.getLikedComments().add(this);
     }
+    public void removeCommentLikeByUser(User user) {
+        usersThatLikedComment.remove(user);
+        user.getLikedComments().remove(this);
+    }
+    public boolean isLikedByUser (User user){
+        return usersThatLikedComment.contains(user);
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

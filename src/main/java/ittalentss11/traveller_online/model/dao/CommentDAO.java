@@ -12,8 +12,9 @@ public class CommentDAO {
     @Autowired
     CommentRepository commentRepository;
 
-    public void addComment(Comment comment) {
+    public long addComment(Comment comment) {
         commentRepository.save(comment);
+        return comment.getId();
     }
 
     public Comment getCommentById(Long id) throws BadRequestException {
