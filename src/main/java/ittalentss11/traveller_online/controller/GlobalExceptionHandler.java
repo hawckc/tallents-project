@@ -1,12 +1,15 @@
 package ittalentss11.traveller_online.controller;
 import ittalentss11.traveller_online.controller.controller_exceptions.*;
 import ittalentss11.traveller_online.model.dto.ExceptionDTO;
+import javassist.NotFoundException;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.net.MalformedURLException;
 import java.sql.SQLException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartException;
@@ -152,6 +155,24 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 e.getClass().getName());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(value = NotFoundException.class)
+    public ResponseEntity<ExceptionDTO> notFoundException(Exception e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(
+                e.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                LocalDateTime.now(),
+                e.getClass().getName());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(value = MalformedURLException.class)
+    public ResponseEntity<ExceptionDTO> malformedUrlException(Exception e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(
+                e.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                LocalDateTime.now(),
+                e.getClass().getName());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
     }
     //TODO : ADD EXCEPTION HANDLER FOR EVERYTHING ELSE
 }

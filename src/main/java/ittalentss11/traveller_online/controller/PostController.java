@@ -9,6 +9,7 @@ import ittalentss11.traveller_online.model.pojo.Category;
 import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.pojo.PostPicture;
 import ittalentss11.traveller_online.model.pojo.User;
+import javassist.NotFoundException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,9 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,6 +55,14 @@ public class PostController {
         post.setUser(u);
         if (postDTO.getMapUrl() == null || postDTO.getMapUrl().isEmpty()){
             throw new BadRequestException("Make sure to fill your map URL.");
+        }
+        try {
+            URL url = new URL(postDTO.getMapUrl());
+            URLConnection conn = url.openConnection();
+            conn.connect();
+        }
+        catch (MalformedURLException e){
+            throw new MalformedURLException("The link you are uploading is invalid.");
         }
         post.setMapUrl(postDTO.getMapUrl());
         if (postDTO.getLocationName() == null || postDTO.getLocationName().isEmpty()){
@@ -193,11 +205,17 @@ public class PostController {
     @SneakyThrows
     @GetMapping("/postsByUname/{user_name}")
     public ArrayList<ViewPostDTO> getPostByUsername(@PathVariable("user_name") String username){
-        return postDAO.getPostsByUsername(username);
+        //If no posts are found:
+        ArrayList<ViewPostDTO> posts = postDAO.getPostsByUsername(username);
+        if (posts == null){
+            throw new NotFoundException("We didn't find any posts matching the given username.");
+        }
+        return posts;
     }
     @SneakyThrows
     @GetMapping("/postsByTag/{user_id}")
     public ArrayList<ViewPostDTO> getPostByTag(@PathVariable("user_id") int id){
+        //TODO: if user inputs letters instead of numbers we get:  java.lang.NumberFormatException
         return postDAO.getPostsByTag(id);
     }
 
@@ -206,8 +224,16 @@ public class PostController {
     public RedirectView viewMap(@PathVariable("id") Long id) {
         RedirectView redirectView = new RedirectView();
         Post post = postDAO.getPostById(id);
-        //TODO : Validation of external link?
         String link = post.getMapUrl();
+        try {
+            URL url = new URL(link);
+            URLConnection conn = url.openConnection();
+            conn.connect();
+        }
+        catch (MalformedURLException e){
+            throw new MalformedURLException("The link you are trying to access is invalid.");
+        }
+
         redirectView.setUrl(link);
         return redirectView;
     }

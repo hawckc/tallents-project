@@ -1,5 +1,6 @@
 package ittalentss11.traveller_online.model.dao;
 import ittalentss11.traveller_online.controller.controller_exceptions.BadRequestException;
+import ittalentss11.traveller_online.model.dto.PictureDTO;
 import ittalentss11.traveller_online.model.dto.ViewPostDTO;
 import ittalentss11.traveller_online.model.dto.ViewPostsAndLikesDTO;
 import ittalentss11.traveller_online.model.pojo.Post;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -25,8 +27,15 @@ public class PostDAO {
                     "(user_id, video_url, description , other_info, category_id, coordinates, map_url, location_name, date_time) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
     public static final String UPDATE_POST_FOR_VIDEOS = "UPDATE final_project.posts SET video_url = ? WHERE id = ?;";
-    public static final String GET_POSTS_BY_DATE_AND_LIKES = "SELECT COUNT(l.post_id) AS likes, p.* FROM posts AS p LEFT JOIN likes AS l ON p.id = l.post_id GROUP BY p.id HAVING DATE (p.date_time) = ? ORDER BY likes DESC, date_time DESC";
-    public static final String GET_POSTS_BY_USERNAME = "SELECT p.* FROM final_project.posts AS p JOIN users AS un ON p.user_id = un.id WHERE un.username LIKE CONCAT('%', ? ,'%');";
+    public static final String GET_POSTS_BY_DATE_AND_LIKES = "SELECT COUNT(l.post_id) AS likes, p.* FROM posts AS p " +
+            "LEFT JOIN likes AS l ON p.id = l.post_id " +
+            "GROUP BY p.id " +
+            "HAVING DATE (p.date_time) = ? " +
+            "ORDER BY likes DESC, " +
+            "date_time DESC";
+    public static final String GET_POSTS_BY_USERNAME = "SELECT p.* FROM final_project.posts AS p " +
+            "JOIN users AS un ON p.user_id = un.id " +
+            "WHERE un.username LIKE CONCAT('%', ? ,'%');";
     private static final String GET_POSTS_BY_TAG = "SELECT p.* FROM final_project.tags AS t" +
             " JOIN final_project.posts AS p ON t.post_id = p.id WHERE t.user_id = ? ORDER BY p.id;";
 
@@ -104,6 +113,8 @@ public class PostDAO {
             ArrayList<ViewPostDTO> arr = new ArrayList<>();
             while (set.next()) {
                 ViewPostDTO postDTO = new ViewPostDTO();
+                postDTO.setId(set.getLong("id"));
+                postDTO.setDescription(set.getString("description"));
                 postDTO.setMapUrl(set.getString("map_url"));
                 postDTO.setCoordinates(set.getString("coordinates"));
                 postDTO.setLocationName(set.getString("location_name"));
@@ -111,8 +122,12 @@ public class PostDAO {
                 postDTO.setCategoryId(set.getInt("category_id"));
                 postDTO.setVideoUrl(set.getString("video_url"));
                 postDTO.setOtherInfo(set.getString("other_info"));
+                //TODO : do not forget to remove the comment on that below after you repair DB
                 //postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
                 arr.add(postDTO);
+            }
+            if (arr.isEmpty()){
+                return null;
             }
             return arr;
         }
@@ -126,6 +141,8 @@ public class PostDAO {
             ArrayList<ViewPostDTO> arr = new ArrayList<>();
             while(set.next()){
                 ViewPostDTO postDTO = new ViewPostDTO();
+                postDTO.setId(set.getLong("id"));
+                postDTO.setDescription(set.getString("description"));
                 postDTO.setMapUrl(set.getString("map_url"));
                 postDTO.setCoordinates(set.getString("coordinates"));
                 postDTO.setLocationName(set.getString("location_name"));
@@ -133,6 +150,7 @@ public class PostDAO {
                 postDTO.setCategoryId(set.getInt("category_id"));
                 postDTO.setVideoUrl(set.getString("video_url"));
                 postDTO.setOtherInfo(set.getString("other_info"));
+                //TODO : do not forget to remove the comment on that below after you repair DB
                 //postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
                 arr.add(postDTO);
             }
