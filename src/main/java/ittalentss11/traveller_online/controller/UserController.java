@@ -6,12 +6,15 @@ import ittalentss11.traveller_online.model.dao.UserDAO;
 
 import ittalentss11.traveller_online.model.dto.*;
 import ittalentss11.traveller_online.model.pojo.*;
+import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
+
 //TODO : DO WE NEED TO ADD MODIFICATIONS? (change pass, names?, delete post, edit post)
 @RestController
 public class UserController {
@@ -19,6 +22,8 @@ public class UserController {
     public static final String USER_LOGGED = "logged";
     @Autowired
     private UserDAO userDao;
+    @Autowired
+    private UserRepository userRepository;
     private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
     //USER REGISTRATION
     @SneakyThrows
@@ -26,22 +31,20 @@ public class UserController {
     public UserNoSensitiveDTO add (@RequestBody UserRegDTO user, HttpSession session){
         //VERIFICATIONS:
         //Check if username is available
-        if (!userDao.usernameIsAvailable(user.getUsername())){
+        if (userRepository.countUsersByUsernameEquals(user.getUsername())>=1){
             throw new UsernameTakenException("This username already exists, please pick another one.");
         }
         //Check if email is not used already
-        if (!userDao.emailIsAvailable(user.getEmail())){
+        if (userRepository.countUsersByEmailEquals(user.getEmail())>=1){
             throw new EmailTakenException("Email already exists, please pick another one.");
         }
         //Check if passwords match
         if (!user.getPassword().equals(user.getConfPassword())){
             throw new NoPassMatchException("Wrong password setup, please make sure to confirm your password.");
         }
-        if (!user.getPassword().equals(user.getConfPassword())){
-            throw new NoPassMatchException("Wrong password setup, please make sure to confirm your password.");
-        }
-        if (user.checkPasswordPatterns(user.getPassword()) == false){
-            throw new RegisterCheckException("Please enter a password containg atleast 6 letters or numbers");
+        if (!user.checkPasswordPatterns(user.getPassword())){
+            throw new RegisterCheckException
+                    ("Please enter a password containing at least 6 letters or numbers without spaces");
         }
         //Verify email validity
         if (!user.checkEmail(user.getEmail())){
@@ -78,7 +81,7 @@ public class UserController {
             throw new AuthorizationException("Wrong credentials, please verify your username and password.");
         }
         session.setAttribute(USER_LOGGED, u);
-        return new UserNoSensitiveDTO(u.getFirstName(), u.getLastName(), u.getUsername(), u.getEmail());
+        return new UserNoSensitiveDTO(u);
     }
     @SneakyThrows
     @GetMapping(value = "/follow/{id}")
@@ -89,11 +92,18 @@ public class UserController {
             throw new AuthorizationException();
         }
         //Getting and verifying user ID
-        User followUser = userDao.getUserById(id);
+        User followUser;
+        Optional<User> optionalFollowed = userRepository.findById(id);
+        if (optionalFollowed.isPresent()){
+            followUser = optionalFollowed.get();
+        }
+        else {
+            throw new BadRequestException("Sorry, this user does not exist.");
+        }
         followUser.addFollower(u);
-        userDao.save(followUser);
+        userRepository.save(followUser);
         return new UserNoSensitiveDTO
-                (followUser.getFirstName(), followUser.getLastName(), followUser.getUsername(), followUser.getEmail());
+                (followUser);
     }
     @GetMapping("/users/newsFeed/")
     @SneakyThrows

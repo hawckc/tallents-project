@@ -1,9 +1,7 @@
 package ittalentss11.traveller_online.model.dao;
 import ittalentss11.traveller_online.model.dto.PictureDTO;
-import ittalentss11.traveller_online.model.dto.ViewPostDTO;
 import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.pojo.PostPicture;
-import ittalentss11.traveller_online.model.repository_ORM.PostPictureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;

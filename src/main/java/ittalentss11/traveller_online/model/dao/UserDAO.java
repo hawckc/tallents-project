@@ -2,7 +2,6 @@ package ittalentss11.traveller_online.model.dao;
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
-import ittalentss11.traveller_online.controller.controller_exceptions.BadRequestException;
 import ittalentss11.traveller_online.model.dto.ViewPostDTO;
 import ittalentss11.traveller_online.model.pojo.User;
 import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Component;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
 @Component
 public class UserDAO {
@@ -47,16 +45,6 @@ public class UserDAO {
     private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
 
     //=========== USER REGISTRATION ==========/
-    //MAIL AVAILABILITY
-    public boolean emailIsAvailable (String email){
-        int result = userRepository.countUsersByEmailEquals(email);
-        return result == 0;
-    }
-    //USERNAME AVAILABILITY
-    public boolean usernameIsAvailable (String username){
-        int result = userRepository.countUsersByUsernameEquals(username);
-        return result == 0;
-    }
     //USER REGISTRATION
     public void register (final User user){
         //hash is made by taking password and salting
@@ -94,17 +82,6 @@ public class UserDAO {
             }
             return null;
         }
-    }
-    public User getUserById(Long uId) throws BadRequestException {
-        Optional<User> optionalUser = userRepository.findById(uId);
-        if (optionalUser.isPresent()){
-            return optionalUser.get();
-        }
-        throw new BadRequestException("Sorry, this user does not exist.");
-    }
-
-    public void save(User user) {
-        userRepository.save(user);
     }
 
     public HashMap<String, ArrayList<ViewPostDTO>> getNewsFeed(User user) throws SQLException {

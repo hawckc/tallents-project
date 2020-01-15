@@ -10,12 +10,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserNoSensitiveDTO {
+    private long id;
     private String firstName;
     private String lastName;
     private String username;
     private String email;
     
     public UserNoSensitiveDTO(User user){
+        this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.username = user.getUsername();

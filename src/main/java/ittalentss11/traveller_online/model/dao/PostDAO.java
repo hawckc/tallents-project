@@ -1,18 +1,14 @@
 package ittalentss11.traveller_online.model.dao;
 import ittalentss11.traveller_online.controller.controller_exceptions.BadRequestException;
-import ittalentss11.traveller_online.model.dto.PictureDTO;
 import ittalentss11.traveller_online.model.dto.ViewPostDTO;
 import ittalentss11.traveller_online.model.dto.ViewPostsAndLikesDTO;
 import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.repository_ORM.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-
 import org.springframework.stereotype.Component;
-
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -35,7 +31,7 @@ public class PostDAO {
             "date_time DESC";
     public static final String GET_POSTS_BY_USERNAME = "SELECT p.* FROM final_project.posts AS p " +
             "JOIN users AS un ON p.user_id = un.id " +
-            "WHERE un.username LIKE CONCAT('%', ? ,'%');";
+            "WHERE un.username LIKE ?;";
     private static final String GET_POSTS_BY_TAG = "SELECT p.* FROM final_project.tags AS t" +
             " JOIN final_project.posts AS p ON t.post_id = p.id WHERE t.user_id = ? ORDER BY p.id;";
 
@@ -76,10 +72,6 @@ public class PostDAO {
         throw new BadRequestException("Sorry, that post doesn't exist");
     }
 
-    public void save(Post post) {
-        postRepository.save(post);
-    }
-
     public ArrayList<ViewPostsAndLikesDTO> getPostsSortedByDateAndLikes(String date) throws SQLException {
         //get all posts by given date and ordered by likes
         try (Connection connection = jdbcTemplate.getDataSource().getConnection();
@@ -88,19 +80,9 @@ public class PostDAO {
             ResultSet set = preparedStatement.executeQuery();
             ArrayList<ViewPostsAndLikesDTO> postsByDateAndLikes = new ArrayList<>();
             while (set.next()) {
-                ViewPostsAndLikesDTO postDTO = new ViewPostsAndLikesDTO();
-                postDTO.setLikes(set.getInt("likes"));
-                postDTO.setId(set.getLong("id"));
-                postDTO.setUserId(set.getInt("user_id"));
-                postDTO.setCategoryId(set.getInt("category_id"));
-                postDTO.setDescription(set.getString("description"));
-                postDTO.setMapUrl(set.getString("map_url"));
-                postDTO.setOtherInfo(set.getString("other_info"));
-                postDTO.setCoordinates(set.getString("coordinates"));
-                postDTO.setVideoUrl(set.getString("video_url"));
-                postDTO.setLocationName(set.getString("location_name"));
-                postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
-                postsByDateAndLikes.add(postDTO);
+                ViewPostsAndLikesDTO viewPostsAndLikesDTO =
+                        new ViewPostsAndLikesDTO(getPostDtoFromResultSet(set), set.getInt("likes"));
+                postsByDateAndLikes.add(viewPostsAndLikesDTO);
             }
             return postsByDateAndLikes;
         }
@@ -108,22 +90,11 @@ public class PostDAO {
     public ArrayList<ViewPostDTO> getPostsByUsername(String username) throws SQLException {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection();
              PreparedStatement ps = connection.prepareStatement(GET_POSTS_BY_USERNAME)) {
-            ps.setString(1, username);
+            ps.setString(1, "%" + username + "%");
             ResultSet set = ps.executeQuery();
             ArrayList<ViewPostDTO> arr = new ArrayList<>();
             while (set.next()) {
-                ViewPostDTO postDTO = new ViewPostDTO();
-                postDTO.setId(set.getLong("id"));
-                postDTO.setDescription(set.getString("description"));
-                postDTO.setMapUrl(set.getString("map_url"));
-                postDTO.setCoordinates(set.getString("coordinates"));
-                postDTO.setLocationName(set.getString("location_name"));
-                postDTO.setUserId(set.getInt("user_id"));
-                postDTO.setCategoryId(set.getInt("category_id"));
-                postDTO.setVideoUrl(set.getString("video_url"));
-                postDTO.setOtherInfo(set.getString("other_info"));
-                //TODO : do not forget to remove the comment on that below after you repair DB
-                //postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
+                ViewPostDTO postDTO = getPostDtoFromResultSet(set);
                 arr.add(postDTO);
             }
             if (arr.isEmpty()){
@@ -133,28 +104,34 @@ public class PostDAO {
         }
     }
 
-    public ArrayList<ViewPostDTO> getPostsByTag(int UserTag) throws SQLException {
+    public ArrayList<ViewPostDTO> getPostsByUserTagged(int userId) throws SQLException {
         try(Connection connection = jdbcTemplate.getDataSource().getConnection();
             PreparedStatement ps = connection.prepareStatement(GET_POSTS_BY_TAG)){
-            ps.setInt(1, UserTag);
+            ps.setInt(1, userId);
             ResultSet set = ps.executeQuery();
             ArrayList<ViewPostDTO> arr = new ArrayList<>();
             while(set.next()){
-                ViewPostDTO postDTO = new ViewPostDTO();
-                postDTO.setId(set.getLong("id"));
-                postDTO.setDescription(set.getString("description"));
-                postDTO.setMapUrl(set.getString("map_url"));
-                postDTO.setCoordinates(set.getString("coordinates"));
-                postDTO.setLocationName(set.getString("location_name"));
-                postDTO.setUserId(set.getInt("user_id"));
-                postDTO.setCategoryId(set.getInt("category_id"));
-                postDTO.setVideoUrl(set.getString("video_url"));
-                postDTO.setOtherInfo(set.getString("other_info"));
-                //TODO : do not forget to remove the comment on that below after you repair DB
-                //postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
+                //TODO check if it works properly for all 3 methods
+                ViewPostDTO postDTO = getPostDtoFromResultSet(set);
                 arr.add(postDTO);
             }
             return arr;
         }
+    }
+
+    private ViewPostDTO getPostDtoFromResultSet (ResultSet set) throws SQLException {
+        ViewPostDTO postDTO = new ViewPostDTO();
+        postDTO.setId(set.getLong("id"));
+        postDTO.setDescription(set.getString("description"));
+        postDTO.setMapUrl(set.getString("map_url"));
+        postDTO.setCoordinates(set.getString("coordinates"));
+        postDTO.setLocationName(set.getString("location_name"));
+        postDTO.setUserId(set.getInt("user_id"));
+        postDTO.setCategoryId(set.getInt("category_id"));
+        postDTO.setVideoUrl(set.getString("video_url"));
+        postDTO.setOtherInfo(set.getString("other_info"));
+        //TODO : do not forget to remove the comment on that below after you repair DB
+        //postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
+        return postDTO;
     }
 }

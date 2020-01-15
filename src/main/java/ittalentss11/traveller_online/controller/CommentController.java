@@ -1,11 +1,11 @@
 package ittalentss11.traveller_online.controller;
 import ittalentss11.traveller_online.controller.controller_exceptions.AuthorizationException;
-import ittalentss11.traveller_online.model.dao.CommentDAO;
 import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dto.CommentDTO;
 import ittalentss11.traveller_online.model.pojo.Comment;
 import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.pojo.User;
+import ittalentss11.traveller_online.model.repository_ORM.CommentRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class CommentController {
     @Autowired
     private PostDAO postDAO;
     @Autowired
-    private CommentDAO commentDAO;
+    private CommentRepository commentRepository;
 
     @SneakyThrows
     @PostMapping("/comments/{id}")
@@ -33,7 +33,8 @@ public class CommentController {
         comment.setUser(u);
         comment.setPost(post);
         comment.setText(commentDTO.getComment());
-        commentDTO.setId(commentDAO.addComment(comment));
+        commentRepository.save(comment);
+        commentDTO.setId(comment.getId());
         return commentDTO;
     }
 }

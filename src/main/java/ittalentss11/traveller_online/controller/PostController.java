@@ -1,6 +1,5 @@
 package ittalentss11.traveller_online.controller;
 import ittalentss11.traveller_online.controller.controller_exceptions.*;
-import ittalentss11.traveller_online.model.dao.CategoryDAO;
 import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dao.UserDAO;
 import ittalentss11.traveller_online.model.dao.PostPictureDao;
@@ -9,6 +8,9 @@ import ittalentss11.traveller_online.model.pojo.Category;
 import ittalentss11.traveller_online.model.pojo.Post;
 import ittalentss11.traveller_online.model.pojo.PostPicture;
 import ittalentss11.traveller_online.model.pojo.User;
+import ittalentss11.traveller_online.model.repository_ORM.CategoryRepository;
+import ittalentss11.traveller_online.model.repository_ORM.PostRepository;
+import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import javassist.NotFoundException;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +25,11 @@ import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Optional;
 
 @RestController
 public class PostController {
@@ -37,9 +38,13 @@ public class PostController {
     @Autowired
     private UserDAO userDAO;
     @Autowired
-    private CategoryDAO categoryDAO;
-    @Autowired
     private PostPictureDao postPictureDao;
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PostRepository postRepository;
     private static final int MAX_PICTURES = 3;
 
     //============ ADD A POST ==================//
@@ -75,7 +80,14 @@ public class PostController {
         post.setDescription(postDTO.getDescription());
         post.setOtherInfo(postDTO.getOtherInfo());
         //validate if there is a category with id
-        Category category = categoryDAO.getCategoryById(postDTO.getCategoryId());
+        Category category;
+        Optional<Category> optionalCategory = categoryRepository.findById(postDTO.getCategoryId());
+        if (optionalCategory.isPresent()){
+            category = optionalCategory.get();
+        }
+        else {
+            throw new BadRequestException("This category does not exist!");
+        }
         post.setCategory(category);
         if (!postDTO.checkCoordinates(postDTO.getCoordinates())) {
                 throw new WrongCoordinatesException();
@@ -185,9 +197,16 @@ public class PostController {
         if (post.getUser().getId()!=u.getId()){
             throw new AuthorizationException("You cannot tag people on someone else's post");
         }
-        User taggedUser = userDAO.getUserById(uId);
+        User taggedUser;
+        Optional<User> optionalUser = userRepository.findById(uId);
+        if (optionalUser.isPresent()){
+            taggedUser = optionalUser.get();
+        }
+        else {
+            throw new BadRequestException("Sorry, this user does not exist.");
+        }
         post.addTaggedUser(taggedUser);
-        postDAO.save(post);
+        postRepository.save(post);
         return new TagDTO(uId, pId);
     }
 
@@ -213,10 +232,10 @@ public class PostController {
         return posts;
     }
     @SneakyThrows
-    @GetMapping("/postsByTag/{user_id}")
-    public ArrayList<ViewPostDTO> getPostByTag(@PathVariable("user_id") int id){
+    @GetMapping("/postsByTaggedUser/{user_id}")
+    public ArrayList<ViewPostDTO> getPostByTag(@PathVariable("user_id") int userId){
         //TODO: if user inputs letters instead of numbers we get:  java.lang.NumberFormatException
-        return postDAO.getPostsByTag(id);
+        return postDAO.getPostsByUserTagged(userId);
     }
 
     @SneakyThrows

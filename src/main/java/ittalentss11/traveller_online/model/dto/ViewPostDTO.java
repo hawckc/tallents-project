@@ -1,5 +1,6 @@
 package ittalentss11.traveller_online.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ittalentss11.traveller_online.model.pojo.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class ViewPostDTO {
     private String description;
     private String videoUrl;
     private String otherInfo;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime dateTime;
 
     public ViewPostDTO(Post post, List<PictureDTO> pictures) {

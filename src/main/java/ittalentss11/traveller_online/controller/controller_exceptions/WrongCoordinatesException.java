@@ -5,6 +5,7 @@ public class WrongCoordinatesException extends Exception {
     }
 
     public WrongCoordinatesException(){
-        super("Wrong coordinates format. The format should be two up-to-7-digit numbers separated by space.");
+        super("Wrong coordinates format. Simply type the coordinates without dots or commas." +
+                "The format should be two up-to-9-digit numbers separated by space.");
     }
 }

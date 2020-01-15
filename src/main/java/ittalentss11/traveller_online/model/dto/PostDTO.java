@@ -1,4 +1,5 @@
 package ittalentss11.traveller_online.model.dto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ittalentss11.traveller_online.model.pojo.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class PostDTO {
     private String mapUrl;
     private String locationName;
     private String description;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime dateTime;
     private String otherInfo;
 
@@ -41,7 +43,7 @@ public class PostDTO {
     }
 
     public boolean checkCoordinates(String coordinates){
-        String correct = "^[0-9]* [0-9]{2,7}$";
+        String correct = "^[0-9]* [0-9]{2,9}$";
         Pattern pattern = Pattern.compile(correct);
         if (coordinates == null){
             return false;

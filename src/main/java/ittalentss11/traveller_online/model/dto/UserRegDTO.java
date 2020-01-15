@@ -70,13 +70,13 @@ public class UserRegDTO {
         }
     }
     public boolean checkPasswordPatterns(String password){
-        String correct = "^[a-zA-Z][a-zA-Z0-9]{5,}$";
+        String correct = "^[a-zA-Z][a-zA-Z0-9]{5,30}$";
         Pattern pattern = Pattern.compile(correct);
         if (password == null){
             return false;
         }
         else {
-            return pattern.matcher(username).matches() && pattern.matcher(password).matches();
+            return pattern.matcher(password).matches();
         }
     }
 }
