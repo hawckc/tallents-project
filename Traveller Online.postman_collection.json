@@ -1,0 +1,626 @@
+{
+	"info": {
+		"_postman_id": "993d823e-d2ea-8331-7723-de53dce33553",
+		"name": "Traveller Online",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Registration/Login/Logout",
+			"item": [
+				{
+					"name": "Registration",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"firstName\" : \"Johnny\",\r\n\t\"lastName\" : \"Bravo\",\r\n\t\"username\" : \"jbravo\",\r\n\t\"email\" : \"jbravo@hotmail.com\",\r\n\t\"password\" : \"jbravo123\",\r\n\t\"confPassword\" : \"jbravo123\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Registration virgin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"firstName\" : \"Frank\",\r\n\t\"lastName\" : \"Jefferson\",\r\n\t\"username\" : \"franky\",\r\n\t\"email\" : \"franky@hotmail.com\",\r\n\t\"password\" : \"franky123\",\r\n\t\"confPassword\" : \"franky123\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\" : \"jbravo\",\r\n\t\"password\" : \"jbravo123\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/users/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login virgin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\" : \"\",\r\n\t\"password\" : \"\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/users/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/users/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Post + Picture + Video",
+			"item": [
+				{
+					"name": "Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"categoryId\" : \"1\",\r\n    \"coordinates\" : \"300762021 765791213\",\r\n    \"mapUrl\" : \"https://www.google.com/maps/place/Himalayas/@30.0762021,76.5791213,5z/data=!3m1!4b1!4m5!3m4!1s0x3995b9ebef1235bd:0x3ae1297b70640201!8m2!3d28.5983159!4d83.9310623\",\r\n    \"locationName\" : \"Himalayas\",\r\n    \"description\" : \"I went all the way to the top, it was breathtaking to say the least.\",\r\n    \"otherInfo\" : \"Here's a little video I took from there!\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/posts",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Posting a picture",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "picture",
+									"type": "file",
+									"src": "/C:/Users/35988/Downloads/EVEREST.jpg"
+								},
+								{
+									"key": "picture",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/posts/36/pictures?picture=C:/posts/png/ER_Diagram.png",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"posts",
+								"36",
+								"pictures"
+							],
+							"query": [
+								{
+									"key": "picture",
+									"value": "C:/posts/png/ER_Diagram.png"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Posting a video",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "videos",
+									"type": "file",
+									"src": "/C:/Users/35988/Downloads/Pixar Short La Luna - Shooting Star Clip2.avi"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/posts/36/videos",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"posts",
+								"36",
+								"videos"
+							],
+							"query": [
+								{
+									"key": "picture",
+									"value": "C:/posts/png/ER_Diagram.png",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Comment/Like/Dislike/Tag",
+			"item": [
+				{
+					"name": "Comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"comment\" : \"I am commenting on my own post! Twice!\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/comments/36",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"comments",
+								"36"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Like a post",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/likes/36",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"likes",
+								"36"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dislike a post",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/dislikes/36",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"dislikes",
+								"36"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Tag an user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/posts/36/users/29",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"posts",
+								"36",
+								"users",
+								"29"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Like a comment",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/comments/8/likes",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"comments",
+								"8",
+								"likes"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Follow/Unfollow/Newsfeed",
+			"item": [
+				{
+					"name": "FollowUser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/follow/29",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"follow",
+								"29"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UnfollowUser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/unfollow/29",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"unfollow",
+								"29"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Newsfeed",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/users/newsFeed/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"newsFeed",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Views",
+			"item": [
+				{
+					"name": "View posts by username",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/postsByUname/jb",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"postsByUname",
+								"jb"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View posts by userTag",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/postsByTaggedUser/29",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"postsByTaggedUser",
+								"29"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Posts By Date and Likes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/posts/byDate/2020-01-15",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"posts",
+								"byDate",
+								"2020-01-15"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Map of Post",
+					"request": {
+						"method": "VIEW",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/posts/36",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"posts",
+								"36"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "View post by id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/posts/36",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"posts",
+						"36"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
