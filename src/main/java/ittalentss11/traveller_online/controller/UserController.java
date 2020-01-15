@@ -44,7 +44,8 @@ public class UserController {
         }
         if (!user.checkPasswordPatterns(user.getPassword())){
             throw new RegisterCheckException
-                    ("Please enter a password containing at least 6 letters or numbers without spaces");
+                    ("Please enter a password containing at least 6 letters or numbers without spaces." +
+                            "Your password can contain dots, dashes or underscores");
         }
         //Verify email validity
         if (!user.checkEmail(user.getEmail())){
@@ -86,7 +87,6 @@ public class UserController {
     @SneakyThrows
     @GetMapping(value = "/follow/{id}")
     public UserNoSensitiveDTO followUser (@PathVariable("id") Long id, HttpSession session){
-        //Is the user logged in?
         User u = loginVerification.checkIfLoggedIn(session);
         //Getting and verifying user ID
         User followUser;
@@ -96,6 +96,9 @@ public class UserController {
         }
         else {
             throw new BadRequestException("Sorry, this user does not exist.");
+        }
+        if (followUser.getId() == u.getId()){
+            throw new BadRequestException("You cannot follow yourself.");
         }
         followUser.addFollower(u);
         userRepository.save(followUser);

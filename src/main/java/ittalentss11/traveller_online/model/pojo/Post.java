@@ -93,7 +93,7 @@ public class Post {
         user.getDislikedPosts().remove(this);
     }
     public boolean isDislikedByUser (User user){
-        return this.usersThatLiked.contains(user);
+        return this.usersThatDisliked.contains(user);
     }
     public void addTaggedUser(User user) {
         usersTagged.add(user);

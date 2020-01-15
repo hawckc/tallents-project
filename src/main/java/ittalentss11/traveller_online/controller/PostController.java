@@ -144,7 +144,7 @@ public class PostController {
         }
         String path = "C://posts//videos//";
         String videosName = PostController.getNameForUpload(multipartFile.getOriginalFilename(), user, post);
-        if (post.getVideoUrl() != null || !post.getVideoUrl().isEmpty()){
+        if (post.getVideoUrl() != null){
             //if a user has a video on post, we delete the old one from path folder
             File file = new File(path + post.getVideoUrl());
             file.delete();
@@ -160,7 +160,7 @@ public class PostController {
         }
         post.setVideoUrl(videosName);
         postDAO.addVideos(post, videosName);
-        return new ViewPostDTO(post);
+        return new ViewPostDTO(post, postPictureDao.getPicturesByPostId(post.getId()));
     }
     public static String getNameForUpload(String name, User user, Post post){
         //name should have one . in it

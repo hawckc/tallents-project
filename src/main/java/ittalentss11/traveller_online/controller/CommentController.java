@@ -1,4 +1,5 @@
 package ittalentss11.traveller_online.controller;
+import ittalentss11.traveller_online.controller.controller_exceptions.BadRequestException;
 import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dto.CommentDTO;
 import ittalentss11.traveller_online.model.pojo.Comment;
@@ -27,9 +28,17 @@ public class CommentController {
         Comment comment = new Comment();
         comment.setUser(u);
         comment.setPost(post);
+        if(commentDTO.getComment() == null){
+            throw new BadRequestException("You cannot submit an empty comment;");
+        }
+        if(commentDTO.getComment().isEmpty()){
+            throw new BadRequestException("You cannot submit an empty comment;");
+        }
         comment.setText(commentDTO.getComment());
         commentRepository.save(comment);
         commentDTO.setId(comment.getId());
+        commentDTO.setUserId(u.getId());
+        commentDTO.setPostId(post.getId());
         return commentDTO;
     }
 }
