@@ -3,7 +3,6 @@ import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import ittalentss11.traveller_online.controller.controller_exceptions.*;
 import ittalentss11.traveller_online.model.dao.UserDAO;
-
 import ittalentss11.traveller_online.model.dto.*;
 import ittalentss11.traveller_online.model.pojo.*;
 import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
-//TODO : DO WE NEED TO ADD MODIFICATIONS? (change pass, names?, delete post, edit post)
 @RestController
 public class UserController {
 
@@ -24,6 +22,8 @@ public class UserController {
     private UserDAO userDao;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private LoginVerificationController loginVerification;
     private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
     //USER REGISTRATION
     @SneakyThrows
@@ -87,10 +87,7 @@ public class UserController {
     @GetMapping(value = "/follow/{id}")
     public UserNoSensitiveDTO followUser (@PathVariable("id") Long id, HttpSession session){
         //Is the user logged in?
-        User u = (User) session.getAttribute(UserController.USER_LOGGED);
-        if (u == null){
-            throw new AuthorizationException();
-        }
+        User u = loginVerification.checkIfLoggedIn(session);
         //Getting and verifying user ID
         User followUser;
         Optional<User> optionalFollowed = userRepository.findById(id);
@@ -108,11 +105,29 @@ public class UserController {
     @GetMapping("/users/newsFeed/")
     @SneakyThrows
     public HashMap<String, ArrayList<ViewPostDTO>> getTags(HttpSession session){
-        User user = (User) session.getAttribute(USER_LOGGED);
-        if (user == null){
-            throw new AuthorizationException();
-        }
+        User user = loginVerification.checkIfLoggedIn(session);
         return userDao.getNewsFeed(user);
+    }
+    @SneakyThrows
+    @GetMapping(value = "/unfollow/{id}")
+    public UserNoSensitiveDTO unfollowUser (@PathVariable("id") Long id, HttpSession session){
+        //Is the user logged in?
+        User u = loginVerification.checkIfLoggedIn(session);
+        //Getting and verifying user ID
+        User unfollowUser;
+        Optional<User> optionalFollowed = userRepository.findById(id);
+        if (optionalFollowed.isPresent()){
+            unfollowUser = optionalFollowed.get();
+        }
+        else {
+            throw new BadRequestException("Sorry, this user does not exist.");
+        }
+        if (!unfollowUser.hasFollower(u)){
+            throw new BadRequestException("Sorry, you cannot unfollow an user you are not following.");
+        }
+        unfollowUser.removeFollower(u);
+        userRepository.save(unfollowUser);
+        return new UserNoSensitiveDTO(unfollowUser);
     }
     @GetMapping("/users/logout")
     public void logOut(HttpSession session){

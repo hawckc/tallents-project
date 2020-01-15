@@ -45,6 +45,8 @@ public class PostController {
     private UserRepository userRepository;
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private LoginVerificationController loginVerification;
     private static final int MAX_PICTURES = 3;
 
     //============ ADD A POST ==================//
@@ -52,10 +54,7 @@ public class PostController {
     @PostMapping("/posts")
     public PostDTO addPost(@Valid @RequestBody PostDTO postDTO, HttpSession session) {
         //Is the user logged in?
-        User u = (User) session.getAttribute(UserController.USER_LOGGED);
-        if (u == null) {
-            throw new AuthorizationException();
-        }
+        User u = loginVerification.checkIfLoggedIn(session);
         Post post = new Post();
         post.setUser(u);
         if (postDTO.getMapUrl() == null || postDTO.getMapUrl().isEmpty()){
@@ -109,11 +108,7 @@ public class PostController {
     @PostMapping("/posts/{id}/pictures")
     public PictureDTO addPicture(@RequestPart(value = "picture") MultipartFile multipartFile, @PathVariable("id") long id,
                              HttpSession session){
-        //first we check if the user is logged in
-        User user = (User) session.getAttribute(UserController.USER_LOGGED);
-        if (user == null){
-            throw new AuthorizationException();
-        }
+        User user = loginVerification.checkIfLoggedIn(session);
         // we check if there is a post with id
         Post post = postDAO.getPostById(id);
         if (postPictureDao.getNumberOfPictures(post.getId()) >= MAX_PICTURES){
@@ -141,11 +136,7 @@ public class PostController {
     @PostMapping("/posts/{id}/videos")
     public ViewPostDTO addVideos(@RequestPart(value = "videos") MultipartFile multipartFile, @PathVariable("id") long id,
                                  HttpSession session){
-        //first we check if the use is logged
-        User user = (User) session.getAttribute(UserController.USER_LOGGED);
-        if (user == null){
-            throw new AuthorizationException();
-        }
+        User user = loginVerification.checkIfLoggedIn(session);
         // we check if there is a post with id
         Post post = postDAO.getPostById(id);
         if (!post.getUser().getUsername().equals(user.getUsername())){
@@ -187,11 +178,7 @@ public class PostController {
     @SneakyThrows
     @GetMapping("/posts/{pId}/users/{uId}")
     public TagDTO tagSomeone(@PathVariable("pId") Long pId, @PathVariable("uId") Long uId, HttpSession session){
-        //Is the user logged in?
-        User u = (User) session.getAttribute(UserController.USER_LOGGED);
-        if (u == null){
-            throw new AuthorizationException();
-        }
+        User u = loginVerification.checkIfLoggedIn(session);
         //Check if user is trying to tag someone on his post
         Post post = postDAO.getPostById(pId);
         if (post.getUser().getId()!=u.getId()){
@@ -234,7 +221,6 @@ public class PostController {
     @SneakyThrows
     @GetMapping("/postsByTaggedUser/{user_id}")
     public ArrayList<ViewPostDTO> getPostByTag(@PathVariable("user_id") int userId){
-        //TODO: if user inputs letters instead of numbers we get:  java.lang.NumberFormatException
         return postDAO.getPostsByUserTagged(userId);
     }
 
@@ -252,7 +238,6 @@ public class PostController {
         catch (MalformedURLException e){
             throw new MalformedURLException("The link you are trying to access is invalid.");
         }
-
         redirectView.setUrl(link);
         return redirectView;
     }

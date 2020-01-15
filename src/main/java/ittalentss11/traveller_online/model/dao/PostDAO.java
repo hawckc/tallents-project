@@ -111,7 +111,6 @@ public class PostDAO {
             ResultSet set = ps.executeQuery();
             ArrayList<ViewPostDTO> arr = new ArrayList<>();
             while(set.next()){
-                //TODO check if it works properly for all 3 methods
                 ViewPostDTO postDTO = getPostDtoFromResultSet(set);
                 arr.add(postDTO);
             }
@@ -130,8 +129,7 @@ public class PostDAO {
         postDTO.setCategoryId(set.getInt("category_id"));
         postDTO.setVideoUrl(set.getString("video_url"));
         postDTO.setOtherInfo(set.getString("other_info"));
-        //TODO : do not forget to remove the comment on that below after you repair DB
-        //postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
+        postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
         return postDTO;
     }
 }

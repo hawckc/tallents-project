@@ -68,10 +68,16 @@ public class User {
         this.email = email;
         this.password = password;
     }
-    //TODO : DO WE NEED TO UNFOLLOW?
     public void addFollower(User user) {
         followers.add(user);
         user.following.add(this);
+    }
+    public void removeFollower(User user) {
+        followers.remove(user);
+        user.following.remove(this);
+    }
+    public boolean hasFollower (User user){
+        return followers.contains(user);
     }
 
     @Override

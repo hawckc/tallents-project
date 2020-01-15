@@ -25,15 +25,14 @@ public class LikesController {
     private CommentRepository commentRepository;
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private LoginVerificationController loginVerification;
 
     @SneakyThrows
     @GetMapping("/likes/{id}")
     public LikeAndDislikeDTO likePost(@PathVariable("id") Long id, HttpSession session){
         //Is the user logged in?
-        User u = (User) session.getAttribute(UserController.USER_LOGGED);
-        if (u == null){
-            throw new AuthorizationException();
-        }
+        User u = loginVerification.checkIfLoggedIn(session);
         //Getting and verifying post ID
         Post post = postDAO.getPostById(id);
         if (post.isDislikedByUser(u)){
@@ -53,11 +52,7 @@ public class LikesController {
     @SneakyThrows
     @GetMapping("/dislikes/{id}")
     public LikeAndDislikeDTO dislikePost(@PathVariable("id") Long id, HttpSession session){
-        //Is the user logged in?
-        User u = (User) session.getAttribute(UserController.USER_LOGGED);
-        if (u == null){
-            throw new AuthorizationException();
-        }
+        User u = loginVerification.checkIfLoggedIn(session);
         //Getting and verifying post ID
         Post post = postDAO.getPostById(id);
         if (post.isLikedByUser(u)){
@@ -76,11 +71,7 @@ public class LikesController {
     @SneakyThrows
     @GetMapping("/comments/{id}/likes")
     public CommentLikesDTO likeComment(@PathVariable("id") Long id, HttpSession session){
-        //Is the user logged in?
-        User u = (User) session.getAttribute(UserController.USER_LOGGED);
-        if (u == null){
-            throw new AuthorizationException();
-        }
+        User u = loginVerification.checkIfLoggedIn(session);
         //Getting and verifying comment ID
         Comment comment;
         Optional<Comment> optionalComment = commentRepository.findById(id);
