@@ -109,7 +109,11 @@ public class UserController {
     @SneakyThrows
     public HashMap<String, ArrayList<ViewPostDTO>> getTags(HttpSession session){
         User user = loginVerification.checkIfLoggedIn(session);
-        return userDao.getNewsFeed(user);
+        HashMap<String, ArrayList<ViewPostDTO>> arr = userDao.getNewsFeed(user);
+        if (arr.isEmpty() == true){
+            return userDao.getNewsFeedNewUser();
+        }
+        return arr;
     }
     @SneakyThrows
     @GetMapping(value = "/unfollow/{id}")

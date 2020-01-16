@@ -20,9 +20,9 @@ import java.util.HashMap;
 
 @Component
 public class UserDAO {
-    public static final String INSERT_USER = "INSERT INTO final_project.users (first_name, last_name, username, password, email) VALUES (:first_name, :last_name, :username, :password, :email);";
-    public static final String USER_BY_USERNAME = "SELECT * FROM final_project.users WHERE username = ?;";
-    public static final String USER_NEWS_FEED = "SELECT followed.username, p.* FROM users AS u " +
+    private static final String INSERT_USER = "INSERT INTO final_project.users (first_name, last_name, username, password, email) VALUES (:first_name, :last_name, :username, :password, :email);";
+    private static final String USER_BY_USERNAME = "SELECT * FROM final_project.users WHERE username = ?;";
+    private static final String USER_NEWS_FEED = "SELECT followed.username, p.* FROM users AS u " +
             "JOIN users_follow_users AS f ON u.id = f.follower_id " +
             "JOIN posts AS p ON p.user_id = f.followed_id " +
             "JOIN users AS followed ON followed.id = f.followed_id WHERE f.follower_id = ? " +
@@ -35,6 +35,7 @@ public class UserDAO {
             "WHERE f.follower_id = ? " +
             "GROUP BY username " +
             "ORDER BY username;";
+    private static final String USER_NEWS_FEED_NEW_USER = "SELECT COUNT(c.post_id), uu.username,  p.* FROM final_project.posts AS p JOIN comments AS c ON p.id = c.post_id JOIN users AS uu ON p.user_id = uu.id GROUP BY c.post_id ORDER BY COUNT(c.post_id) LIMIT 100;";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -97,16 +98,28 @@ public class UserDAO {
                     usersWithPosts.put(username, new ArrayList<>());
                 }
                 ViewPostDTO postDTO = new ViewPostDTO();
+                postDTO = PostDAO.getPostDtoFromResultSet(set);
                 //join category to get category name
-                postDTO.setUserId(set.getInt("user_id"));
-                postDTO.setCategoryId(set.getInt("category_id"));
-                postDTO.setDescription(set.getString("description"));
-                postDTO.setMapUrl(set.getString("map_url"));
-                postDTO.setOtherInfo(set.getString("other_info"));
-                postDTO.setCoordinates(set.getString("coordinates"));
-                postDTO.setVideoUrl(set.getString("video_url"));
-                postDTO.setLocationName(set.getString("location_name"));
-                postDTO.setDateTime(set.getTimestamp("date_time").toLocalDateTime());
+                ArrayList<ViewPostDTO> arr = usersWithPosts.get(username);
+                arr.add(postDTO);
+                usersWithPosts.put(username, arr);
+            }
+            return usersWithPosts;
+        }
+    }
+    public HashMap<String, ArrayList<ViewPostDTO>> getNewsFeedNewUser() throws SQLException {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(USER_NEWS_FEED_NEW_USER)) {
+            ResultSet set = preparedStatement.executeQuery();
+            HashMap<String, ArrayList<ViewPostDTO>> usersWithPosts = new HashMap<>();
+            while (set.next()){
+                String username = set.getString("username");
+                if (usersWithPosts.containsKey(username) == false){
+                    usersWithPosts.put(username, new ArrayList<>());
+                }
+                ViewPostDTO postDTO = new ViewPostDTO();
+                postDTO = PostDAO.getPostDtoFromResultSet(set);
+                //join category to get category name
                 ArrayList<ViewPostDTO> arr = usersWithPosts.get(username);
                 arr.add(postDTO);
                 usersWithPosts.put(username, arr);

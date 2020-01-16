@@ -22,14 +22,14 @@ public class PostDAO {
             "INSERT INTO final_project.posts " +
                     "(user_id, video_url, description , other_info, category_id, coordinates, map_url, location_name, date_time) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-    public static final String UPDATE_POST_FOR_VIDEOS = "UPDATE final_project.posts SET video_url = ? WHERE id = ?;";
-    public static final String GET_POSTS_BY_DATE_AND_LIKES = "SELECT COUNT(l.post_id) AS likes, p.* FROM posts AS p " +
+    private static final String UPDATE_POST_FOR_VIDEOS = "UPDATE final_project.posts SET video_url = ? WHERE id = ?;";
+    private static final String GET_POSTS_BY_DATE_AND_LIKES = "SELECT COUNT(l.post_id) AS likes, p.* FROM posts AS p " +
             "LEFT JOIN likes AS l ON p.id = l.post_id " +
             "GROUP BY p.id " +
             "HAVING DATE (p.date_time) = ? " +
             "ORDER BY likes DESC, " +
             "date_time DESC";
-    public static final String GET_POSTS_BY_USERNAME = "SELECT p.* FROM final_project.posts AS p " +
+    private static final String GET_POSTS_BY_USERNAME = "SELECT p.* FROM final_project.posts AS p " +
             "JOIN users AS un ON p.user_id = un.id " +
             "WHERE un.username LIKE ?;";
     private static final String GET_POSTS_BY_TAG = "SELECT p.* FROM final_project.tags AS t" +
@@ -118,7 +118,7 @@ public class PostDAO {
         }
     }
 
-    private ViewPostDTO getPostDtoFromResultSet (ResultSet set) throws SQLException {
+    protected static ViewPostDTO getPostDtoFromResultSet (ResultSet set) throws SQLException {
         ViewPostDTO postDTO = new ViewPostDTO();
         postDTO.setId(set.getLong("id"));
         postDTO.setDescription(set.getString("description"));
