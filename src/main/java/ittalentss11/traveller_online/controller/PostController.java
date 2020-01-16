@@ -68,16 +68,16 @@ public class PostController {
         catch (MalformedURLException e){
             throw new MalformedURLException("The link you are uploading is invalid.");
         }
-        post.setMapUrl(postDTO.getMapUrl());
+        post.setMapUrl(postDTO.getMapUrl().trim());
         if (postDTO.getLocationName() == null || postDTO.getLocationName().isEmpty()){
             throw new BadRequestException("Make sure to fill your location name.");
         }
-        post.setLocationName(postDTO.getLocationName());
+        post.setLocationName(postDTO.getLocationName().trim());
         if (postDTO.getDescription() == null || postDTO.getDescription().isEmpty()){
             throw new BadRequestException("Make sure to add a short description of your trip.");
         }
-        post.setDescription(postDTO.getDescription());
-        post.setOtherInfo(postDTO.getOtherInfo());
+        post.setDescription(postDTO.getDescription().trim());
+        post.setOtherInfo(postDTO.getOtherInfo().trim());
         //validate if there is a category with id
         Category category;
         Optional<Category> optionalCategory = categoryRepository.findById(postDTO.getCategoryId());
@@ -91,7 +91,7 @@ public class PostController {
         if (!postDTO.checkCoordinates(postDTO.getCoordinates())) {
                 throw new WrongCoordinatesException();
         }
-        post.setCoordinates(postDTO.getCoordinates());
+        post.setCoordinates(postDTO.getCoordinates().trim());
         post.setDateTime(LocalDateTime.now());
         postDAO.addPost(post);
         return new PostDTO(post);

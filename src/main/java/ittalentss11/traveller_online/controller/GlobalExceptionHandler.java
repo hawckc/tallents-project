@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.net.MalformedURLException;
+import java.sql.DataTruncation;
 import java.sql.SQLException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartException;
@@ -17,8 +18,6 @@ import org.springframework.web.multipart.MultipartException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-
-//TODO ADD GLOBAL HANDLERS SUCH AS SQL EXCEPTIONS AND OTHERS
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -174,6 +173,23 @@ public class GlobalExceptionHandler {
                 e.getClass().getName());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
     }
-    //TODO : ADD EXCEPTION HANDLER FOR EVERYTHING ELSE
+    @ExceptionHandler(value = DataTruncation.class)
+    public ResponseEntity<ExceptionDTO> dataTruncation(Exception e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(
+                e.getMessage(),
+                HttpStatus.LENGTH_REQUIRED.value(),
+                LocalDateTime.now(),
+                e.getClass().getName());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.LENGTH_REQUIRED);
+    }
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ExceptionDTO> generalExceptions(Exception e){
+        ExceptionDTO exceptionDTO = new ExceptionDTO(
+                "Oops something went wrong: please check your URLs and internet connection.",
+                HttpStatus.NOT_FOUND.value(),
+                LocalDateTime.now(),
+                e.getClass().getName());
+        return new ResponseEntity<>(exceptionDTO, HttpStatus.NOT_FOUND);
+    }
 }
 

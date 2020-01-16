@@ -110,7 +110,7 @@ public class UserController {
     public HashMap<String, ArrayList<ViewPostDTO>> getTags(HttpSession session){
         User user = loginVerification.checkIfLoggedIn(session);
         HashMap<String, ArrayList<ViewPostDTO>> arr = userDao.getNewsFeed(user);
-        if (arr.isEmpty() == true){
+        if (arr.isEmpty()){
             return userDao.getNewsFeedNewUser();
         }
         return arr;
@@ -136,6 +136,7 @@ public class UserController {
         userRepository.save(unfollowUser);
         return new UserNoSensitiveDTO(unfollowUser);
     }
+
     @GetMapping("/users/logout")
     public void logOut(HttpSession session){
         session.invalidate();

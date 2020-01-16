@@ -4,7 +4,6 @@ import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import ittalentss11.traveller_online.model.dto.ViewPostDTO;
 import ittalentss11.traveller_online.model.pojo.User;
-import ittalentss11.traveller_online.model.repository_ORM.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,11 +15,13 @@ import org.springframework.stereotype.Component;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 @Component
 public class UserDAO {
-    private static final String INSERT_USER = "INSERT INTO final_project.users (first_name, last_name, username, password, email) VALUES (:first_name, :last_name, :username, :password, :email);";
+    private static final String INSERT_USER =
+            "INSERT INTO final_project.users (first_name, last_name, username, password, email) " +
+            "VALUES (:first_name, :last_name, :username, :password, :email);";
     private static final String USER_BY_USERNAME = "SELECT * FROM final_project.users WHERE username = ?;";
     private static final String USER_NEWS_FEED = "SELECT followed.username, p.* FROM users AS u " +
             "JOIN users_follow_users AS f ON u.id = f.follower_id " +
@@ -35,12 +36,15 @@ public class UserDAO {
             "WHERE f.follower_id = ? " +
             "GROUP BY username " +
             "ORDER BY username;";
-    private static final String USER_NEWS_FEED_NEW_USER = "SELECT COUNT(c.post_id), uu.username,  p.* FROM final_project.posts AS p JOIN comments AS c ON p.id = c.post_id JOIN users AS uu ON p.user_id = uu.id GROUP BY c.post_id ORDER BY COUNT(c.post_id) LIMIT 100;";
+    private static final String USER_NEWS_FEED_NEW_USER =
+            "SELECT COUNT(c.post_id), uu.username,  p.* FROM final_project.posts AS p " +
+            "JOIN comments AS c ON p.id = c.post_id " +
+            "JOIN users AS uu ON p.user_id = uu.id " +
+            "GROUP BY c.post_id " +
+            "ORDER BY COUNT(c.post_id) DESC LIMIT 100;";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
@@ -85,13 +89,13 @@ public class UserDAO {
         }
     }
 
-    public HashMap<String, ArrayList<ViewPostDTO>> getNewsFeed(User user) throws SQLException {
+    public LinkedHashMap<String, ArrayList<ViewPostDTO>> getNewsFeed(User user) throws SQLException {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(USER_NEWS_FEED)) {
             preparedStatement.setInt(1, (int) user.getId());
             preparedStatement.setInt(2, (int) user.getId());
             ResultSet set = preparedStatement.executeQuery();
-            HashMap<String, ArrayList<ViewPostDTO>> usersWithPosts = new HashMap<>();
+            LinkedHashMap<String, ArrayList<ViewPostDTO>> usersWithPosts = new LinkedHashMap<>();
             while (set.next()){
                 String username = set.getString("username");
                 if (usersWithPosts.containsKey(username) == false){
@@ -107,11 +111,11 @@ public class UserDAO {
             return usersWithPosts;
         }
     }
-    public HashMap<String, ArrayList<ViewPostDTO>> getNewsFeedNewUser() throws SQLException {
+    public LinkedHashMap<String, ArrayList<ViewPostDTO>> getNewsFeedNewUser() throws SQLException {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(USER_NEWS_FEED_NEW_USER)) {
             ResultSet set = preparedStatement.executeQuery();
-            HashMap<String, ArrayList<ViewPostDTO>> usersWithPosts = new HashMap<>();
+            LinkedHashMap<String, ArrayList<ViewPostDTO>> usersWithPosts = new LinkedHashMap<>();
             while (set.next()){
                 String username = set.getString("username");
                 if (usersWithPosts.containsKey(username) == false){
