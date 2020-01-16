@@ -1,5 +1,4 @@
 package ittalentss11.traveller_online.controller;
-import ittalentss11.traveller_online.controller.controller_exceptions.AuthorizationException;
 import ittalentss11.traveller_online.controller.controller_exceptions.BadRequestException;
 import ittalentss11.traveller_online.model.dao.PostDAO;
 import ittalentss11.traveller_online.model.dto.CommentLikesDTO;

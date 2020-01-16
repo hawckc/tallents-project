@@ -2,7 +2,6 @@ package ittalentss11.traveller_online.controller;
 import ittalentss11.traveller_online.controller.controller_exceptions.*;
 import ittalentss11.traveller_online.model.dto.ExceptionDTO;
 import javassist.NotFoundException;
-import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

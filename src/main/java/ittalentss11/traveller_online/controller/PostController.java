@@ -52,7 +52,7 @@ public class PostController {
     //============ ADD A POST ==================//
     @SneakyThrows
     @PostMapping("/posts")
-    public PostDTO addPost(@Valid @RequestBody PostDTO postDTO, HttpSession session) {
+    public PostDTO addPost(@RequestBody PostDTO postDTO, HttpSession session) {
         //Is the user logged in?
         User u = loginVerification.checkIfLoggedIn(session);
         Post post = new Post();
